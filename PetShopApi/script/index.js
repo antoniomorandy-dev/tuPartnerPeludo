@@ -114,6 +114,25 @@ function handleCredentialResponse(response) {
     mostrarSeccionPerfil();
 }
 
+function mostrarSeccionPerfil() {
+    const user = JSON.parse(localStorage.getItem('user_session'));
+    if (user) {
+        document.getElementById('login-section').classList.add('d-none');
+        document.getElementById('user-profile').classList.remove('d-none');
+        document.getElementById('user-name').textContent = user.nombre;
+        if (user.foto) {
+            document.getElementById('user-photo').src = user.foto;
+        }
+    }
+}
+
+// También es recomendable agregar esta validación al cargar la página
+window.onload = function() {
+    if (localStorage.getItem('user_session')) {
+        mostrarSeccionPerfil();
+    }
+};
+
 function decodeJwtResponse(token) {
     let base64Url = token.split('.')[1];
     let base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
