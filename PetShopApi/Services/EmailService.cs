@@ -19,7 +19,7 @@ namespace PetShopApi.Services
 
             var baseUrl = settings["BaseUrl"];
 
-            string enlace = $"{baseUrl}/api/usuarios/confirmar?token={token}";
+            string enlace = $"{baseUrl}api/usuarios/confirmar?token={token}";
 
             var smtpPortString = settings["SmtpPort"];
             if (string.IsNullOrWhiteSpace(smtpPortString))

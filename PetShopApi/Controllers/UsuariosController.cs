@@ -32,17 +32,19 @@ public class UsuariosController : ControllerBase
             string codigoWS = new Random().Next(100000, 999999).ToString();
             string tokenEmail = Guid.NewGuid().ToString();
 
-            bool exito = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
+            var (codigo, mensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
 
-            if (exito)
+            if (codigo == 1)
             {
                 _emailService.EnviarCorreoValidacion(user.Email, tokenEmail);
                 await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
 
-                return Ok(new { codigo = 1, mensaje = "¡Registro exitoso! Revisa tu WhatsApp o Email." });
+                return Ok(new { codigo, mensaje });
             }
-
-            return BadRequest(new { codigo = 0, mensaje = "Error al registrar. El usuario ya podría existir." });
+            else
+            {
+                return BadRequest(new { codigo, mensaje });
+            }
         }
         catch (Exception ex)
         {

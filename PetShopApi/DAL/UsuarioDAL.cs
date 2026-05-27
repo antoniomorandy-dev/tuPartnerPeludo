@@ -13,30 +13,60 @@ namespace PetShopApi.DAL
         {
             _conexionFll = conexionFll;
         }
-        public async Task<bool> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
+        //public async Task<bool> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
+        //{
+        //    using (var conexion = _conexionFll.ObtenerConexion())
+        //    {
+        //        await conexion.OpenAsync();
+
+        //        string sql = @"INSERT INTO Usuarios 
+        //               (Nombre, Apellido, Email, Telefono, PasswordHash, TokenValidacion, CodigoWhatsApp, EmailValidado) 
+        //               VALUES 
+        //               (@Nombre, @Apellido, @Email, @Telefono, @Pass, @TokenEmail, @CodigoWS, 0)";
+
+        //        using (var cmd = new MySqlCommand(sql, conexion))
+        //        {
+        //            cmd.Parameters.AddWithValue("@Nombre", user.Nombre);
+        //            cmd.Parameters.AddWithValue("@Apellido", user.Apellido ?? "");
+        //            cmd.Parameters.AddWithValue("@Email", user.Email);
+        //            cmd.Parameters.AddWithValue("@Telefono", user.Telefono);
+        //            cmd.Parameters.AddWithValue("@Pass", BCrypt.Net.BCrypt.HashPassword(user.Password));
+
+        //            cmd.Parameters.AddWithValue("@TokenEmail", tokenEmail);
+        //            cmd.Parameters.AddWithValue("@CodigoWS", codigoWhatsApp);
+
+        //            int filasAfectadas = await cmd.ExecuteNonQueryAsync();
+        //            return filasAfectadas > 0;
+        //        }
+        //    }
+        //}
+        public async Task<(int? codigo, string? mensaje)> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
         {
             using (var conexion = _conexionFll.ObtenerConexion())
             {
                 await conexion.OpenAsync();
-
-                string sql = @"INSERT INTO Usuarios 
-                       (Nombre, Apellido, Email, Telefono, PasswordHash, TokenValidacion, CodigoWhatsApp, EmailValidado) 
-                       VALUES 
-                       (@Nombre, @Apellido, @Email, @Telefono, @Pass, @TokenEmail, @CodigoWS, 0)";
-
-                using (var cmd = new MySqlCommand(sql, conexion))
+                using (var cmd = new MySqlCommand("sp_RegistrarUsuario", conexion))
                 {
-                    cmd.Parameters.AddWithValue("@Nombre", user.Nombre);
-                    cmd.Parameters.AddWithValue("@Apellido", user.Apellido ?? "");
-                    cmd.Parameters.AddWithValue("@Email", user.Email);
-                    cmd.Parameters.AddWithValue("@Telefono", user.Telefono);
-                    cmd.Parameters.AddWithValue("@Pass", BCrypt.Net.BCrypt.HashPassword(user.Password));
+                    cmd.CommandType = CommandType.StoredProcedure;
 
-                    cmd.Parameters.AddWithValue("@TokenEmail", tokenEmail);
-                    cmd.Parameters.AddWithValue("@CodigoWS", codigoWhatsApp);
+                    // Parámetros de ENTRADA (IN)
+                    cmd.Parameters.AddWithValue("@p_Nombre", user.Nombre);
+                    cmd.Parameters.AddWithValue("@p_Apellido", user.Apellido?? "Sin apellido");
+                    cmd.Parameters.AddWithValue("@p_Email", user.Email);
+                    cmd.Parameters.AddWithValue("@p_Password", BCrypt.Net.BCrypt.HashPassword(user.Password));
+                    cmd.Parameters.AddWithValue("@p_Telefono", user.Telefono);
+                    cmd.Parameters.AddWithValue("@p_TokenEmail", tokenEmail);
+                    cmd.Parameters.AddWithValue("@p_CodigoWS", codigoWhatsApp);
 
-                    int filasAfectadas = await cmd.ExecuteNonQueryAsync();
-                    return filasAfectadas > 0;
+                    // Parámetros de SALIDA (OUT)
+                    var pCodigo = new MySqlParameter("@p_codigo", MySqlDbType.Int32) { Direction = ParameterDirection.Output };
+                    var pMensaje = new MySqlParameter("@p_mensaje", MySqlDbType.VarChar) { Size = 255, Direction = ParameterDirection.Output };
+                    cmd.Parameters.Add(pCodigo);
+                    cmd.Parameters.Add(pMensaje);
+
+                    await cmd.ExecuteNonQueryAsync();
+
+                    return (pCodigo.Value is int codigo ? codigo : (int?)null, pMensaje.Value?.ToString());
                 }
             }
         }
