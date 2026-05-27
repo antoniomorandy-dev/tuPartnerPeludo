@@ -152,6 +152,7 @@ function mostrarVerificacion() {
 
 async function confirmarCodigo() {
     const codigo = document.getElementById('codigo-verificacion').value;
+    const email = document.getElementById('reg-email').value;
     
     // Validamos que no esté vacío
     if (!codigo) {
@@ -164,7 +165,7 @@ async function confirmarCodigo() {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             // Según tu Swagger, el endpoint espera un string simple
-            body: JSON.stringify(codigo) 
+            body: JSON.stringify({ email: email, codigo: codigo })
         });
 
         const data = await response.json();
