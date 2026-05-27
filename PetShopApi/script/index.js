@@ -150,9 +150,34 @@ function mostrarVerificacion() {
 
 async function confirmarCodigo() {
     const codigo = document.getElementById('codigo-verificacion').value;
-    // Aquí deberías tener una llamada a tu API para validar el código
-    // Por ejemplo: fetch(`${CONFIG.API_BASE_URL}/usuarios/verificar-codigo`, ...)
-    console.log("Validando código:", codigo);
+    
+    // Validamos que no esté vacío
+    if (!codigo) {
+        EnviarMensaje(-1, "Por favor, ingresa el código de 6 dígitos.");
+        return;
+    }
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/api/Usuarios/verificar-codigo`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            // Según tu Swagger, el endpoint espera un string simple
+            body: JSON.stringify(codigo) 
+        });
+
+        const data = await response.json();
+        
+        // Manejo de la respuesta
+        EnviarMensaje(data.codigo, data.mensaje);
+        
+        if (data.codigo === 1) {
+            // Si es correcto, llevamos al usuario al login
+            mostrarLogin();
+        }
+    } catch (error) {
+        console.error("Error al verificar:", error);
+        EnviarMensaje(-1, "Error al conectar con el servidor.");
+    }
 }
 
 // También es recomendable agregar esta validación al cargar la página
