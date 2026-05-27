@@ -54,7 +54,7 @@ async function registrarUsuario(datosUsuario) {
         });
         const data = await response.json();
         EnviarMensaje(data.codigo, data.mensaje);
-        if (data.codigo === 1) mostrarLogin();
+        if (data.codigo === 1) mostrarVerificacion();
     } catch (error) {
         console.error("Error Registro:", error);
         EnviarMensaje(-1, "Error al procesar el registro.");
