@@ -158,7 +158,7 @@ async function confirmarCodigo() {
     }
 
     try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/api/Usuarios/verificar-codigo`, {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/Usuarios/verificar-codigo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             // Según tu Swagger, el endpoint espera un string simple
