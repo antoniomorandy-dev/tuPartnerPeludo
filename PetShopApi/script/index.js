@@ -84,6 +84,22 @@ async function solicitarRecuperacion() {
     }
 }
 
+function procesarRegistro(event) {
+    event.preventDefault(); // Evita que la página se recargue
+
+    // Recogemos los datos del formulario
+    const datos = {
+        Nombre: document.getElementById('reg-nombre').value,
+        Apellido: document.getElementById('reg-apellido').value,
+        Email: document.getElementById('reg-email').value,
+        Telefono: document.getElementById('reg-telefono').value,
+        Password: document.getElementById('reg-password').value
+    };
+
+    // Llamamos a la función que ya tenías
+    registrarUsuario(datos);
+}
+
 // 3. UTILIDADES Y SESIÓN
 function irAlMain() { 
     window.location.href = "main.html"; 
