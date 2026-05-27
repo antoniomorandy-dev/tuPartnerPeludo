@@ -11,6 +11,7 @@ function mostrarRegistro() {
     document.getElementById('login-section').classList.add('d-none');
     document.getElementById('recuperar-section').classList.add('d-none');
     document.getElementById('register-section').classList.remove('d-none');
+    document.getElementById('seccion-verificacion').style.display = 'none';
 }
 
 function mostrarLogin() {
@@ -18,6 +19,7 @@ function mostrarLogin() {
     document.getElementById('recuperar-section').classList.add('d-none');
     document.getElementById('user-profile').classList.add('d-none');
     document.getElementById('login-section').classList.remove('d-none');
+    document.getElementById('seccion-verificacion').style.display = 'none';
 }
 
 // 2. MÉTODOS DE LA API (Basados en tu Swagger)
