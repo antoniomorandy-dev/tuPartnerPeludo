@@ -53,21 +53,19 @@ document.getElementById("formLogin").addEventListener("submit", function(event) 
 });
 
 async function iniciarSesion() {
-    const payload = {
-        Email: document.getElementById("loginEmail").value,    // Cambiado a mayúscula
-        Password: document.getElementById("loginPass").value // Cambiado a mayúscula
-    };
+    const Email = document.getElementById("loginEmail").value;
+    const Password = document.getElementById("loginPass").value;
 
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify(payload)
+            body: JSON.stringify({email: Email, password: Password})
         });
 
         const data = await response.json();
 
-        if (response.ok) {
+        if (response.ok && data.codigo === 1) {
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
             mostrarSeccionPerfil();
             //EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
