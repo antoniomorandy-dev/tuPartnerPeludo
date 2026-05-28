@@ -67,7 +67,7 @@ async function iniciarSesion() {
 
         const data = await response.json();
 
-        if (response.ok && data.codigo === 1) {
+        if (response.ok) {
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
             mostrarSeccionPerfil();
             //EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
