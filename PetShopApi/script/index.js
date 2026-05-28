@@ -53,6 +53,10 @@ document.getElementById("formLogin").addEventListener("submit", function(event) 
 });
 
 async function iniciarSesion() {
+    const btnIniciar = document.querySelector("#formLogin button[type='submit']");
+    btnIniciar.disabled = true;
+    btnIniciar.innerText = "Iniciando Sesión...";
+
     const Email = document.getElementById("loginEmail").value;
     const Password = document.getElementById("loginPass").value;
 
@@ -75,6 +79,11 @@ async function iniciarSesion() {
     } catch (error) {
         console.error("Error:", error);
         EnviarMensaje(-1, "No se pudo conectar con el servidor.");
+    }
+    finally
+    {
+        btnIniciar.disabled = false;
+        btnIniciar.innerText = "ENTRAR";
     }
 }
 // Endpoint: /usuarios/registrar
@@ -99,8 +108,8 @@ async function registrarUsuario(datosUsuario) {
             EnviarMensaje(data.codigo || 0, data.mensaje || "Error al registrar.");
         }
     } catch (error) {
-        console.error("Error Registro:", error);
-        EnviarMensaje(-1, "Error al procesar el registro.");
+        console.error("Error completo:", error); // Esto te dirá exactamente qué falló
+        EnviarMensaje(-1, "Error: " + error.message); 
     } finally {
         btnRegistrar.disabled = false;
         btnRegistrar.innerText = "REGISTRARME";
