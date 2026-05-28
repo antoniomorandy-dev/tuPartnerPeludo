@@ -92,8 +92,8 @@ async function registrarUsuario(datosUsuario) {
             body: JSON.stringify(datosUsuario)
         });
         const data = await response.json();
-        EnviarMensaje(data.codigo, data.mensaje);
         if (data.codigo === 1) {
+            EnviarMensaje(data.codigo, data.mensaje);
             mostrarVerificacion();
         } else {
             EnviarMensaje(data.codigo || 0, data.mensaje || "Error al registrar.");
