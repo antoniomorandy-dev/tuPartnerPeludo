@@ -48,8 +48,8 @@ async function loginUsuario(email, password) {
 */
 
 async function iniciarSesion() {
-    const email = document.getElementById("email-login").value;
-    const password = document.getElementById("password-login").value;
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPass").value;
 
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
