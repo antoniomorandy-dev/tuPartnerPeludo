@@ -53,30 +53,38 @@ document.getElementById("formLogin").addEventListener("submit", function(event) 
 });
 
 async function iniciarSesion() {
-    const Email = document.getElementById("loginEmail").value;
-    const Password = document.getElementById("loginPass").value;
-    
+    const email = document.getElementById("loginEmail").value;
+    const password = document.getElementById("loginPass").value;
+
     if (!Email || !Password) {
         EnviarMensaje(0, "Por favor, completa todos los campos.");
         return;
     }
+    
+    const payload = {
+        Email: email,    // Cambiado a mayúscula
+        Password: password // Cambiado a mayúscula
+    };
+
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Email, Password })
+            body: JSON.stringify(payload)
         });
 
         const data = await response.json();
 
-        if (data.codigo === 1) {
+        if (response.ok && data.codigo === 1) {
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
-            mostrarSeccionPerfil(); 
+            mostrarSeccionPerfil();
+            EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
+        } else {
+            EnviarMensaje(data.codigo || 0, data.mensaje || "Error desconocido");
         }
-        EnviarMensaje(data.codigo, data.mensaje);
     } catch (error) {
         console.error("Error:", error);
-        if (data.codigo === -1){EnviarMensaje(data.codigo, data.mensaje);}
+        EnviarMensaje(-1, "No se pudo conectar con el servidor.");
     }
 }
 // Endpoint: /usuarios/registrar
