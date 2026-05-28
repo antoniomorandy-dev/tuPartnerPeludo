@@ -53,11 +53,6 @@ document.getElementById("formLogin").addEventListener("submit", function(event) 
 });
 
 async function iniciarSesion() {
-    if (!email || !password) {
-        EnviarMensaje(0, "Por favor, completa todos los campos.");
-        return;
-    }
-
     const payload = {
         Email: document.getElementById("loginEmail").value,    // Cambiado a mayúscula
         Password: document.getElementById("loginPass").value // Cambiado a mayúscula
