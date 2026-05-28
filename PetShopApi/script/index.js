@@ -1,6 +1,3 @@
-// PetShopApi/script/index.js
-
-// 1. FUNCIONES DE NAVEGACIÓN (Control de vistas)
 function mostrarRecuperar() {
     document.getElementById('login-section').classList.add('d-none');
     document.getElementById('register-section').classList.add('d-none');
@@ -22,34 +19,9 @@ function mostrarLogin() {
     document.getElementById('seccion-verificacion').style.display = 'none';
 }
 
-// 2. MÉTODOS DE LA API (Basados en tu Swagger)
-
-// Endpoint: /usuarios/login
-/*
-async function loginUsuario(email, password) {
-    try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ Email: email, Password: password })
-        });
-        const data = await response.json();
-        if (response.ok && data.codigo === 1) {
-            localStorage.setItem('user_session', JSON.stringify(data.objeto));
-            irAlMain();
-        } else {
-            EnviarMensaje(data.codigo, data.mensaje);
-        }
-    } catch (error) {
-        console.error("Error Login:", error);
-        EnviarMensaje(-1, "No se pudo conectar con el servidor.");
-    }
-}
-*/
-
 document.getElementById("formLogin").addEventListener("submit", function(event) {
-    event.preventDefault(); // Evita que la página se recargue al enviar
-    iniciarSesion();      // Aquí es donde se gatilla tu función
+    event.preventDefault();
+    iniciarSesion();
 });
 
 async function iniciarSesion() {
@@ -72,7 +44,6 @@ async function iniciarSesion() {
         if (response.ok && data.codigo === 1) {
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
             mostrarSeccionPerfil();
-            //EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
         } else {
             EnviarMensaje(data.codigo || 0, data.mensaje || "Error desconocido");
         }
@@ -86,7 +57,6 @@ async function iniciarSesion() {
         btnIniciar.innerText = "ENTRAR";
     }
 }
-// Endpoint: /usuarios/registrar
 async function registrarUsuario(datosUsuario) {
     const btnRegistrar = document.querySelector("#formRegistro button[type='submit']");
     btnRegistrar.disabled = true;
@@ -117,7 +87,6 @@ async function registrarUsuario(datosUsuario) {
     }
 }
 
-// Endpoint: /usuarios/solicitar-recuperacion (WhatsApp)
 async function solicitarRecuperacion() {
     const telefonoInput = document.getElementById("recuperar-telefono");
     if (!telefonoInput) return;
@@ -141,9 +110,8 @@ async function solicitarRecuperacion() {
 }
 
 function procesarRegistro(event) {
-    event.preventDefault(); // Evita que la página se recargue
+    event.preventDefault();
 
-    // Recogemos los datos del formulario
     const datos = {
         Nombre: document.getElementById('reg-nombre').value,
         Apellido: document.getElementById('reg-apellido').value || "Sin apellido",
@@ -152,11 +120,9 @@ function procesarRegistro(event) {
         Password: document.getElementById('reg-password').value
     };
 
-    // Llamamos a la función que ya tenías
     registrarUsuario(datos);
 }
 
-// 3. UTILIDADES Y SESIÓN
 function irAlMain() { 
     window.location.href = "main.html"; 
 }
@@ -212,7 +178,6 @@ async function confirmarCodigo() {
     btnConfirmar.innerText = "Verificando Codigo Whatsapp...";
 
 
-    // Validamos que no esté vacío
     if (!codigo) {
         EnviarMensaje(-1, "Por favor, ingresa el código de 6 dígitos.");
         return;
@@ -222,17 +187,14 @@ async function confirmarCodigo() {
         const response = await fetch(`${CONFIG.API_BASE_URL}/Usuarios/verificar-codigo`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            // Según tu Swagger, el endpoint espera un string simple
             body: JSON.stringify({ email: email, codigo: codigo })
         });
 
         const data = await response.json();
         
-        // Manejo de la respuesta
         EnviarMensaje(data.codigo, data.mensaje);
         
         if (data.codigo === 1) {
-            // Si es correcto, llevamos al usuario al login
             mostrarLogin();
         }
     } catch (error) {
@@ -246,7 +208,6 @@ async function confirmarCodigo() {
     }
 }
 
-// También es recomendable agregar esta validación al cargar la página
 window.onload = function() {
     if (localStorage.getItem('user_session')) {
         mostrarSeccionPerfil();
