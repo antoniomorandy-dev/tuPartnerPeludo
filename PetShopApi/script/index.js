@@ -78,7 +78,7 @@ async function iniciarSesion() {
         if (response.ok && data.codigo === 1) {
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
             mostrarSeccionPerfil();
-            EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
+            //EnviarMensaje(data.codigo, data.mensaje); // Opcional: mostrar éxito
         } else {
             EnviarMensaje(data.codigo || 0, data.mensaje || "Error desconocido");
         }
