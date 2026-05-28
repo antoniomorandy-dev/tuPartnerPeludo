@@ -79,7 +79,12 @@ async function iniciarSesion() {
 }
 // Endpoint: /usuarios/registrar
 async function registrarUsuario(datosUsuario) {
+    const btnRegistrar = document.querySelector("#formRegistro button[type='submit']");
+    btnRegistrar.disabled = true;
+    btnRegistrar.innerText = "Procesando...";
+
     console.log("Datos enviados a la API:", JSON.stringify(datosUsuario));
+
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/registrar`, {
             method: 'POST',
@@ -88,10 +93,17 @@ async function registrarUsuario(datosUsuario) {
         });
         const data = await response.json();
         EnviarMensaje(data.codigo, data.mensaje);
-        if (data.codigo === 1) mostrarVerificacion();
+        if (data.codigo === 1) {
+            mostrarVerificacion();
+        } else {
+            EnviarMensaje(data.codigo || 0, data.mensaje || "Error al registrar.");
+        }
     } catch (error) {
         console.error("Error Registro:", error);
         EnviarMensaje(-1, "Error al procesar el registro.");
+    } finally {
+        btnRegistrar.disabled = false;
+        btnRegistrar.innerText = "REGISTRARME";
     }
 }
 
