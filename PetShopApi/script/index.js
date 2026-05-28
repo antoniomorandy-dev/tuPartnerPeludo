@@ -25,6 +25,7 @@ function mostrarLogin() {
 // 2. MÉTODOS DE LA API (Basados en tu Swagger)
 
 // Endpoint: /usuarios/login
+/*
 async function loginUsuario(email, password) {
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
@@ -44,7 +45,30 @@ async function loginUsuario(email, password) {
         EnviarMensaje(-1, "No se pudo conectar con el servidor.");
     }
 }
+*/
 
+async function iniciarSesion() {
+    const email = document.getElementById("email-login").value;
+    const password = document.getElementById("password-login").value;
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password })
+        });
+
+        const data = await response.json();
+
+        if (data.codigo === 1) {
+            localStorage.setItem('user_session', JSON.stringify(data.usuario));
+            mostrarSeccionPerfil(); 
+        EnviarMensaje(data.codigo, data.mensaje);
+    } catch (error) {
+        console.error("Error:", error);
+        EnviarMensaje(data.codigo, data.mensaje);
+    }
+}
 // Endpoint: /usuarios/registrar
 async function registrarUsuario(datosUsuario) {
     console.log("Datos enviados a la API:", JSON.stringify(datosUsuario));
