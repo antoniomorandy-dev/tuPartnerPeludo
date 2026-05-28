@@ -47,6 +47,11 @@ async function loginUsuario(email, password) {
 }
 */
 
+document.getElementById("formLogin").addEventListener("submit", function(event) {
+    event.preventDefault(); // Evita que la página se recargue al enviar
+    iniciarSesion();      // Aquí es donde se gatilla tu función
+});
+
 async function iniciarSesion() {
     const email = document.getElementById("loginEmail").value;
     const password = document.getElementById("loginPass").value;
