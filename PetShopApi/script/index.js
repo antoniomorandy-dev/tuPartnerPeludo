@@ -207,7 +207,11 @@ function mostrarVerificacion() {
 async function confirmarCodigo() {
     const codigo = document.getElementById('codigo-verificacion').value;
     const email = document.getElementById('reg-email').value;
-    
+    const btnConfirmar = document.getElementById("btn-verificar");
+    btnConfirmar.disabled = true;
+    btnConfirmar.innerText = "Verificando Codigo Whatsapp...";
+
+
     // Validamos que no esté vacío
     if (!codigo) {
         EnviarMensaje(-1, "Por favor, ingresa el código de 6 dígitos.");
@@ -234,6 +238,11 @@ async function confirmarCodigo() {
     } catch (error) {
         console.error("Error al verificar:", error);
         EnviarMensaje(-1, "Error al conectar con el servidor.");
+    }
+    finally
+    {
+        btnConfirmar.disabled = false;
+        btnConfirmar.innerText = "Verificar Cuenta"
     }
 }
 
