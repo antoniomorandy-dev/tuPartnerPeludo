@@ -40,15 +40,15 @@ async function iniciarSesion() {
         });
 
         const data = await response.json();
-        //id (data.codigo === 1) { 
-            
+        id (data.codigo === 1) { 
+            localStorage.setItem('user_session', JSON.stringify(data.usuario));
             EnviarMensaje(1, data.mensaje);
-            //setTimeout(() => {
-                //window.location.href = "main.html";
-            //}, 1000);
-        //} else {
-            //EnviarMensaje(data.codigo || 0, data.mensaje || "Error al iniciar sesión");
-        //}
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 1000);
+        } else {
+            EnviarMensaje(data.codigo || 0, data.mensaje || "Error al iniciar sesión");
+        }
     } catch (error) {
         console.error("Error:", error);
         EnviarMensaje(-1, "No se pudo conectar con el servidor.");
@@ -212,6 +212,17 @@ async function confirmarCodigo() {
 
 window.onload = function() {
     if (localStorage.getItem('user_session')) {
+        mostrarSeccionPerfil();
+    }
+};
+
+window.onload = function() {
+    // Si estamos en la página de inicio (index.html) y ya hay sesión, podemos ir al main directamente
+    // Pero si estamos en main.html, no fuerces una validación de token si ya quitaste la autorización
+    const session = localStorage.getItem('user_session');
+    
+    // Solo mostramos perfil si existe sesión real
+    if (session && window.location.pathname.includes("index.html")) {
         mostrarSeccionPerfil();
     }
 };
