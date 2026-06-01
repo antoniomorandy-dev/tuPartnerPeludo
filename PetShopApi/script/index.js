@@ -44,6 +44,19 @@ async function iniciarSesion(event) {
 
         ProcesarRespuesta(data);
 
+        if (data.codigo === 1) {
+            
+            localStorage.setItem('session_token', data.token); 
+            localStorage.setItem('user_session', JSON.stringify(data.usuario));
+
+            setTimeout(() => {
+                window.location.href = "main.html";
+            }, 1000);
+            
+        } else {
+            ProcesarRespuesta(data);
+            //EnviarMensaje(data.codigo || 0, data.mensaje || "Error al iniciar sesión");
+        }
     } catch (error) {
         console.error("Error Login:", error);
         EnviarMensaje(-1, "Error de conexión con el servidor.");
