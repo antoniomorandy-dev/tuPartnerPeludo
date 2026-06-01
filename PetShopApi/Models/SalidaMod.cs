@@ -2,7 +2,8 @@
 {
     public class SalidaMod
     {
-        public int Codigo { get; set; } // 1: Éxito, 0: Info/Aviso, -1: Error
+        public int Codigo { get; set; }
         public string? Mensaje { get; set; }
+        public List<MensajeRespuesta> Salidas { get; set; } = new List<MensajeRespuesta>();
     }
 }

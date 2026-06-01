@@ -315,6 +315,12 @@ namespace PetShopApi.DAL
             {
                 using (var conexion = _conexionFll.ObtenerConexion())
                 {
+                    string deleteQuery = "DELETE FROM SesionesActivas WHERE FechaExpiracion < GETDATE()";
+
+                    using (var cmdDel = new MySqlCommand(deleteQuery, conexion))
+                    {
+                        cmdDel.ExecuteNonQuery();
+                    }
                     string sql = "SELECT COUNT(*) FROM SesionesActivas WHERE Token = @Token AND FechaExpiracion > GETDATE()";
 
                     using (var cmd = new MySqlCommand(sql, conexion))

@@ -15,7 +15,7 @@ public class ValidarSesionAttribute : ActionFilterAttribute
         var path = context.HttpContext.Request.Path.Value?.ToLower() ?? string.Empty;
 
         // EXCLUIR RUTAS PÚBLICAS
-        if (path.Contains("/login") || path.Contains("/registrar"))
+        if (path.Contains("/login") || path.Contains("/registrar") || path.Contains("/verificar-codigo"))
         {
             await next();
             return; // Permite que continúe sin validar nada
