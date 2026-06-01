@@ -36,25 +36,29 @@ async function iniciarSesion() {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({email: Email, password: Password})
+            body: JSON.stringify({ email: Email, password: Password })
         });
 
         const data = await response.json();
-        id (data.codigo === 1) { 
+
+        if (data.codigo === 1) {
+            
+            localStorage.setItem('session_token', data.token); 
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
-            EnviarMensaje(1, data.mensaje);
+
+            EnviarMensaje(1, "¡Bienvenido!");
+            
             setTimeout(() => {
                 window.location.href = "main.html";
             }, 1000);
+            
         } else {
             EnviarMensaje(data.codigo || 0, data.mensaje || "Error al iniciar sesión");
         }
     } catch (error) {
-        console.error("Error:", error);
-        EnviarMensaje(-1, "No se pudo conectar con el servidor.");
-    }
-    finally
-    {
+        console.error("Error Login:", error);
+        EnviarMensaje(-1, "Error de conexión con el servidor.");
+    } finally {
         btnIniciar.disabled = false;
         btnIniciar.innerText = "ENTRAR";
     }
