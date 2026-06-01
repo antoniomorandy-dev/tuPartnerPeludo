@@ -46,7 +46,7 @@ async function iniciarSesion() {
             localStorage.setItem('session_token', data.token); 
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
 
-            EnviarMensaje(data.codigo, data.mensaje);
+            //EnviarMensaje(data.codigo, data.mensaje);
             
             setTimeout(() => {
                 window.location.href = "main.html";
