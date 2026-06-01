@@ -24,7 +24,8 @@ document.getElementById("formLogin").addEventListener("submit", function(event) 
     iniciarSesion();
 });
 
-async function iniciarSesion() {
+async function iniciarSesion(event) {
+    if (event) event.preventDefault();
     const btnIniciar = document.querySelector("#formLogin button[type='submit']");
     btnIniciar.disabled = true;
     btnIniciar.innerText = "Iniciando Sesión...";
@@ -41,13 +42,13 @@ async function iniciarSesion() {
 
         const data = await response.json();
 
+        ProcesarRespuesta(data);
+
         if (data.codigo === 1) {
             
             localStorage.setItem('session_token', data.token); 
             localStorage.setItem('user_session', JSON.stringify(data.usuario));
 
-            //EnviarMensaje(data.codigo, data.mensaje);
-            
             setTimeout(() => {
                 window.location.href = "main.html";
             }, 1000);
