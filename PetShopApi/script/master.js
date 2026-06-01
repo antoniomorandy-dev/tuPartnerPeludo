@@ -11,7 +11,3 @@ function ProcesarRespuesta(data) {
         console.warn("La respuesta no contiene mensajes:", data);
     }
 }
-
-async function iniciarSesion(data) {
-    ProcesarRespuesta(data); 
-}
