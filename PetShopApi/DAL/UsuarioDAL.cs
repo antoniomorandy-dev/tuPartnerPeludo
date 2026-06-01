@@ -151,6 +151,13 @@ namespace PetShopApi.DAL
                                 int codigo = Convert.ToInt32(pCodigo.Value);
                                 string? mensaje = pMensaje.Value?.ToString();
 
+                                string deleteQuery = "DELETE FROM SesionesActivas WHERE UsuarioID = @UsuarioID";
+                                using (var cmdDel = new MySqlCommand(deleteQuery, conexion))
+                                {
+                                    cmdDel.Parameters.AddWithValue("@UsuarioID", usuarioEncontrado.UsuarioID);
+                                    cmdDel.ExecuteNonQuery();
+                                }
+
                                 if (codigo == 1 && BCrypt.Net.BCrypt.Verify(password, hashAlmacenado))
                                 {
                                     
@@ -300,6 +307,30 @@ namespace PetShopApi.DAL
                     return filasAfectadas > 0;
                 }
             }
+        }
+        public async Task<bool> ValidarTokenEnBD(string token)
+        {
+            bool esValido = false;
+            try
+            {
+                using (var conexion = _conexionFll.ObtenerConexion())
+                {
+                    string sql = "SELECT COUNT(*) FROM SesionesActivas WHERE Token = @Token AND FechaExpiracion > GETDATE()";
+
+                    using (var cmd = new MySqlCommand(sql, conexion))
+                    {
+                        cmd.Parameters.AddWithValue("@Token", token);
+                        int count = Convert.ToInt32(await cmd.ExecuteScalarAsync());
+                        esValido = (count > 0);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine("Error validando token: " + ex.Message);
+                esValido = false;
+            }
+            return esValido;
         }
     }
 }

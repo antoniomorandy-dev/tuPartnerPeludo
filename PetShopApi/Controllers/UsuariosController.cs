@@ -101,7 +101,8 @@ public class UsuariosController : ControllerBase
             {
                 codigo = salida.Codigo,
                 mensaje = salida.Mensaje,
-                user = usuario?.Nombre
+                user = usuario?.Nombre,
+                token = tokenn
             });
         }
         catch (Exception ex)
