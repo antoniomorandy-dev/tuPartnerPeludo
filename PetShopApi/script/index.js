@@ -53,10 +53,6 @@ async function iniciarSesion(event) {
                 window.location.href = "main.html";
             }, 1000);
             
-        } else {
-            ProcesarRespuesta(data);
-            //EnviarMensaje(data.codigo || 0, data.mensaje || "Error al iniciar sesión");
-        }
     } catch (error) {
         console.error("Error Login:", error);
         EnviarMensaje(-1, "Error de conexión con el servidor.");
