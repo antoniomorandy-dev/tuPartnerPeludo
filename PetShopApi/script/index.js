@@ -144,7 +144,7 @@ function EnviarMensaje(codigo, mensaje) {
     else toastr.success(mensaje);
 }
 
-function handleCredentialResponse(response) {
+window.handleCredentialResponse = function(response) {
     const userData = decodeJwtResponse(response.credential);
 
     const sesionGoogle = {
@@ -156,6 +156,16 @@ function handleCredentialResponse(response) {
     localStorage.setItem('session_token', response.credential);
 
     mostrarSeccionPerfil();
+}
+
+function decodeJwtResponse(token) {
+    var base64Url = token.split('.')[1];
+    var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    var jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+        return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+    }).join(''));
+
+    return JSON.parse(jsonPayload);
 }
 
 function mostrarSeccionPerfil() {
