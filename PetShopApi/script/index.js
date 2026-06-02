@@ -248,3 +248,11 @@ function decodeJwtResponse(token) {
     }).join(''));
     return JSON.parse(jsonPayload);
 }
+
+window.onload = function () {
+  google.accounts.id.initialize({
+    client_id: "85108018661-r3dis4gm7h25kg9or2fnnpckhme87raj.apps.googleusercontent.com",
+    callback: window.handleCredentialResponse // Pasamos la función explícitamente
+  });
+  // No necesitas los atributos data- en el HTML si haces esto
+};
