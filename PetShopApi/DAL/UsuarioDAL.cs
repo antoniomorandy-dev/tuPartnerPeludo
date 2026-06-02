@@ -142,11 +142,35 @@ namespace PetShopApi.DAL
                                     UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                                     Nombre = reader["Nombre"]?.ToString(),
                                     Email = reader["Email"]?.ToString(),
-                                    Telefono = reader["Telefono"]?.ToString()
+                                    Telefono = reader["Telefono"]?.ToString(),
+                                    IntentosFallidos = reader["IntentosFallidos"] != DBNull.Value ? Convert.ToInt32(reader["IntentosFallidos"]) : 0,
+                                    FechaBloqueo = reader["FechaBloqueo"] != DBNull.Value ? Convert.ToDateTime(reader["FechaBloqueo"]) : (DateTime?)null
                                 };
                                 string hashAlmacenado = reader["PasswordHash"]?.ToString() ?? string.Empty;
                                 
                                 reader.Close();
+
+                                if (usuarioEncontrado.FechaBloqueo.HasValue)
+                                {
+                                    TimeSpan tiempoTranscurrido = DateTime.Now - usuarioEncontrado.FechaBloqueo.Value;
+
+                                    if (tiempoTranscurrido.TotalMinutes < 15)
+                                    {
+                                        int minutosRestantes = 15 - (int)Math.Floor(tiempoTranscurrido.TotalMinutes);
+                                        salida.Codigo = 0;
+                                        salida.Mensaje = $"Cuenta bloqueada por seguridad. Intente nuevamente en {minutosRestantes} minutos.";
+                                        return (usuarioEncontrado, salida, token);
+                                    }
+                                    else 
+                                    { 
+                                        string queryDes = "UPDATE Usuarios SET IntentosFallidos = 0, FechaBloqueo = NULL WHERE Email = @Email";
+                                        using (var cmdDesbloq = new MySqlCommand(queryDes, conexion))
+                                        {
+                                            cmdDesbloq.Parameters.AddWithValue("@Email", email);
+                                            cmdDesbloq.ExecuteNonQuery();
+                                        }
+                                    }
+                                }
 
                                 int codigo = Convert.ToInt32(pCodigo.Value);
                                 string? mensaje = pMensaje.Value?.ToString();
@@ -158,15 +182,23 @@ namespace PetShopApi.DAL
                                     cmdDel.ExecuteNonQuery();
                                 }
 
+                                string query = "";
+
                                 if (codigo == 1 && BCrypt.Net.BCrypt.Verify(password, hashAlmacenado))
                                 {
                                     
-                                    string query = "INSERT INTO SesionesActivas (UsuarioID, Token, FechaExpiracion) VALUES (@UsuarioID, @Token, DATE_ADD(NOW(), INTERVAL 1 DAY))";
+                                    query = "INSERT INTO SesionesActivas (UsuarioID, Token, FechaExpiracion) VALUES (@UsuarioID, @Token, DATE_ADD(NOW(), INTERVAL 1 DAY))";
                                     using (var cmd2 = new MySqlCommand(query, conexion))
                                     {
                                         cmd2.Parameters.AddWithValue("@UsuarioID", usuarioEncontrado.UsuarioID);
                                         cmd2.Parameters.AddWithValue("@Token", token);
                                         cmd2.ExecuteNonQuery();
+                                    }
+                                    query = "UPDATE Usuarios SET IntentosFallidos = 0, FechaBloqueo = NULL WHERE Email = @Email";
+                                    using (var cmdUpd = new MySqlCommand(query, conexion))
+                                    {
+                                        cmdUpd.Parameters.AddWithValue("@Email", email);
+                                        cmdUpd.ExecuteNonQuery();
                                     }
                                     salida.Codigo = codigo;
                                     salida.Mensaje = mensaje;
@@ -174,8 +206,45 @@ namespace PetShopApi.DAL
                                 }
                                 else
                                 {
-                                    salida.Codigo = 0;
-                                    salida.Mensaje = "Correo o contraseña incorrectos.";
+                                    query = "UPDATE Usuarios SET IntentosFallidos = IntentosFallidos + 1 WHERE Email = @Email";
+                                    using (var cmdInt = new MySqlCommand(query, conexion))
+                                    {
+                                        cmdInt.Parameters.AddWithValue("@Email", email);
+                                        cmdInt.ExecuteNonQuery();
+                                    }
+                                    if (usuarioEncontrado.IntentosFallidos >= 3)
+                                    {
+                                        DateTime fechaBloqueo = DateTime.Now.AddMinutes(15);
+                                        query = "UPDATE Usuarios SET FechaBloqueo = @FechaBloqueo WHERE Email = @Email AND (FechaBloqueo IS NULL OR FechaBloqueo <= NOW())";
+                                        using (var cmdBloq = new MySqlCommand(query, conexion))
+                                        {
+                                            cmdBloq.Parameters.AddWithValue("@FechaBloqueo", fechaBloqueo);
+                                            cmdBloq.Parameters.AddWithValue("@Email", email);
+                                            cmdBloq.ExecuteNonQuery();
+                                        }
+                                        TimeSpan diferencia = fechaBloqueo - DateTime.Now;
+                                        int minutosFaltantes = (int)Math.Ceiling(diferencia.TotalMinutes);
+                                        if (minutosFaltantes > 0)
+                                        {
+                                            salida.Codigo = 0;
+                                            salida.Mensaje = $"Cuenta bloqueada por 15 minutos. Intente nuevamente en {minutosFaltantes} minutos.";
+                                            return (usuarioEncontrado, salida, token);
+                                        }
+                                        else
+                                        {
+                                            query = "UPDATE Usuarios SET IntentosFallidos = 0, FechaBloqueo = NULL WHERE Email = @Email";
+                                            using (var cmdDesBloq = new MySqlCommand(query, conexion))
+                                            {
+                                                cmdDesBloq.Parameters.AddWithValue("@Email", email);
+                                                cmdDesBloq.ExecuteNonQuery();
+                                            }
+                                        }
+                                    }
+                                    else
+                                    {
+                                        salida.Codigo = 0;
+                                        salida.Mensaje = $"Credenciales incorrectas. Intentos fallidos: {usuarioEncontrado.IntentosFallidos}";
+                                    }
                                     return (usuarioEncontrado, salida, token);
                                 }
                             }

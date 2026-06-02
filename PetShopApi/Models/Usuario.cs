@@ -13,5 +13,7 @@ namespace PetShopApi.Mmodels
         public bool? EstaValidado { get; set; } // Cambiará a true al validar
         public string? TokenRecuperacion { get; set; } // Para confirmar que el email es válido
         public DateTime? FechaExpiracionToken { get; set; }
+        public int? IntentosFallidos { get; set; }
+        public DateTime? FechaBloqueo { get; set; }
     }
 }
