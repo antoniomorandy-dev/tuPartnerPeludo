@@ -10,7 +10,7 @@ namespace PetShopApi.DAL
         {
             _configuration = configuration;
         }
-
+/*
         public MySqlConnection ObtenerConexion()
         {
             string? connectionString = _configuration.GetConnectionString("CleverCloudMySql");
@@ -18,6 +18,23 @@ namespace PetShopApi.DAL
             {
                 throw new InvalidOperationException("La cadena de conexión 'CleverCloudMySql' no está configurada.");
             }
+            return new MySqlConnection(connectionString);
+        }
+*/
+        public MySqlConnection ObtenerConexion()
+        {
+            string? connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+        
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                connectionString = _configuration.GetConnectionString("CleverCloudMySql");
+            }
+        
+            if (string.IsNullOrEmpty(connectionString))
+            {
+                throw new InvalidOperationException("La cadena de conexión no está configurada.");
+            }
+        
             return new MySqlConnection(connectionString);
         }
     }
