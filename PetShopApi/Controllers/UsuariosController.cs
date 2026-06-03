@@ -36,8 +36,8 @@ public class UsuariosController : ControllerBase
 
             if (regCodigo == 1)
             {
-                var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(user.Email, tokenEmail);
-                var (wsCodigo, wsMensaje) = await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
+                //var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(user.Email, tokenEmail);
+                //var (wsCodigo, wsMensaje) = await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
 
                 if (emailCodigo == 1 && wsCodigo == 1)
                 {
