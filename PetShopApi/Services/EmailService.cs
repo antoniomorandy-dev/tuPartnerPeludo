@@ -41,7 +41,10 @@ namespace PetShopApi.Services
                 var client = new SmtpClient(smtpServer, int.Parse(smtpPortString))
                 {
                     Credentials = new NetworkCredential(settings["SenderEmail"], settings["SenderPassword"]),
-                    EnableSsl = true
+                    EnableSsl = true,
+                    UseDefaultCredentials = false, // ¡Muy importante!
+                    DeliveryMethod = SmtpDeliveryMethod.Network,
+                    TargetName = "STARTTLS/smtp.gmail.com"
                 };
 
                 var senderEmail = settings["SenderEmail"];
