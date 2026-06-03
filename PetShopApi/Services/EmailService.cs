@@ -71,8 +71,9 @@ namespace PetShopApi.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error enviando correo: {ex.Message}");
-                return (-1, "No se pudo enviar el correo de validación. Intenta nuevamente.");
+                string detalle = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+                Console.WriteLine($"Error detallado enviando correo: {detalle}"); // Esto saldrá en los logs de Render
+                return (-1, "Error: " + detalle); 
             }
         }
     }
