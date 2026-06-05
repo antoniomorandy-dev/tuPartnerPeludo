@@ -43,8 +43,7 @@ namespace PetShopApi.Services
                     Credentials = new NetworkCredential(settings["SenderEmail"], settings["SenderPassword"]),
                     EnableSsl = true,
                     UseDefaultCredentials = false, // ¡Muy importante!
-                    DeliveryMethod = SmtpDeliveryMethod.Network,
-                    TargetName = "STARTTLS/smtp.gmail.com"
+                    DeliveryMethod = SmtpDeliveryMethod.Network
                 };
 
                 var senderEmail = settings["SenderEmail"];
