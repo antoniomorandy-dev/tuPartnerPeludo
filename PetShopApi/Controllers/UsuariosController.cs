@@ -32,7 +32,12 @@ public class UsuariosController : ControllerBase
             string codigoWS = new Random().Next(100000, 999999).ToString();
             string tokenEmail = Guid.NewGuid().ToString();
 
-            var (regCodigo, regMensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
+            //var (regCodigo, regMensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
+            var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(
+                user.Email, 
+                user.Nombre, // <-- Este es el tercer parámetro que faltaba
+                tokenEmail
+            );
 
             if (regCodigo == 1)
             {
