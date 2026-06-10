@@ -19,32 +19,42 @@ namespace PetShopApi.Services
         }
         public async Task<(int emailCodigo, string emailMensaje)> EnviarCorreoValidacion(string emailDestino, string nombre, string token)
         {
-            try
-            {
-                var smtpServer = _configuration["EmailSettings:SmtpServer"];
-                var port = int.Parse(_configuration["EmailSettings:SmtpPort"]);
-                var senderEmail = _configuration["EmailSettings:SenderEmail"];
-                var password = _configuration["EmailSettings:SenderPassword"];
+            var url = "https://api.brevo.com/v3/smtp/email";
+            
+            // 1. Asegúrate de que esta variable en Render tenga la clave xkeysib-...
+            var apiKey = _configuration["EmailSettings:SenderPassword"];
 
-                using (var client = new SmtpClient(smtpServer, port))
+            // 2. Asegúrate de que esta variable en Render sea el correo verificado de tu panel
+            var senderEmail = _configuration["EmailSettings:SenderEmail"];
+
+            using (var httpClient = new HttpClient())
+            {
+                httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
+
+                var payload = new
                 {
-                    client.EnableSsl = true;
-                    client.Credentials = new NetworkCredential(senderEmail, password);
+                    sender = new { name = "Tu Partner Peludo", email = senderEmail },
+                    to = new[] { new { email = emailDestino, name = nombre } },
+                    subject = "Activa tu cuenta de Partner Peludo",
+                    htmlContent = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/confirmar?token={token}'>Validar cuenta</a></p>"
+                };
 
-                    var mailMessage = new MailMessage(senderEmail, emailDestino)
-                    {
-                        Subject = "Activa tu cuenta",
-                        Body = $"Hola {nombre}, haz clic aquí: {_baseUrl}/confirmar?token={token}",
-                        IsBodyHtml = true
-                    };
+                var json = JsonSerializer.Serialize(payload);
+                var content = new StringContent(json, Encoding.UTF8, "application/json");
 
-                    await client.SendMailAsync(mailMessage);
-                    return (1, "Correo enviado correctamente");
+                try 
+                {
+                    var response = await httpClient.PostAsync(url, content);
+                    
+                    if (response.IsSuccessStatusCode)
+                        return (1, "Correo enviado correctamente");
+                    else
+                        return (-1, "Error de Brevo: " + await response.Content.ReadAsStringAsync());
                 }
-            }
-            catch (Exception ex)
-            {
-                return (-1, "Error: " + ex.Message);
+                catch (Exception ex)
+                {
+                    return (-1, "Error de conexión: " + ex.Message);
+                }
             }
         }
     }
