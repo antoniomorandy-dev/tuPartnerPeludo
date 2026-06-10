@@ -28,7 +28,7 @@ namespace PetShopApi.Services
 
                 var payload = new
                 {
-                    sender = new { name = "Tu Partner Peludo", email = "adb95a001@smtp-brevo.com" },
+                    sender = new { name = "Tu Partner Peludo", email = "smtp.gmail.com" },
                     to = new[] { new { email = emailDestino, name = nombre } },
                     subject = "Activa tu cuenta de Partner Peludo",
                     htmlContent = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/confirmar?token={token}'>Validar</a></p>"
