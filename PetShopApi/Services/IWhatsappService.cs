@@ -27,29 +27,24 @@ namespace PetShopApi.Services
             {
                 using var client = new HttpClient();
 
-                var payload = new
-                {
-                    telefono,
-                    codigo
-                };
+                var token = _settings.Token;
+                client.DefaultRequestHeaders.Authorization =
+                    new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+
+                var payload = new { telefono, codigo };
 
                 var url = $"{_settings.BaseUrl}/enviar-codigo";
 
                 var response = await client.PostAsJsonAsync(url, payload);
 
                 if (response.IsSuccessStatusCode)
-                {
-                    return new CodigoValidacionResult(1, "Código Enviado a su Whatsapp Correctamente");
-                }
+                    return new CodigoValidacionResult(1, "Código enviado correctamente");
                 else
-                {
-                    var errorContent = await response.Content.ReadAsStringAsync();
-                    return new CodigoValidacionResult(0, $"Error al enviar WhatsApp: {response.StatusCode}");
-                }
+                    return new CodigoValidacionResult(0, $"Error {response.StatusCode}");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Excepción en EnviarCodigoValidacion: {ex.Message}");
+                //Console.WriteLine($"Excepción en EnviarCodigoValidacion: {ex.Message}");
                 return new CodigoValidacionResult(-1, "No se pudo conectar con el servicio de WhatsApp. Intenta nuevamente.");
             }
         }
