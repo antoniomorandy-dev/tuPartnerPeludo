@@ -44,17 +44,27 @@ namespace PetShopApi.Services
 
                 try 
                 {
-                    var response = await httpClient.PostAsync(url, content);
-                    
-                    if (response.IsSuccessStatusCode)
-                        return (1, "Correo enviado correctamente");
-                    else
-                        return (-1, "Error de Brevo: " + await response.Content.ReadAsStringAsync());
-                }
-                catch (Exception ex)
-                {
-                    return (-1, "Error de conexión: " + ex.Message);
-                }
+                    From = new MailAddress(senderEmail, "Partner Peludo"),
+                    Subject = "Activa tu cuenta de Partner Peludo",
+                    Body = $@"
+                    <h2>¡Bienvenido a Tu Partner Peludo!</h2>
+                    <p>Para completar tu registro, haz clic en el siguiente botón:</p>
+                    <a href='{enlace}' style='padding: 10px 20px; background-color: #28a745; color: white; text-decoration: none; border-radius: 5px;'>Validar mi cuenta</a>
+                    <p>Si el botón no funciona, copia y pega este enlace: <br> {enlace}</p>",
+                    IsBodyHtml = true
+                };
+
+                mailMessage.To.Add(emailDestino);
+                //client.Send(mailMessage);
+                await client.SendMailAsync(mailMessage);
+                codigo = 1;
+                mensaje = "Correo de validación enviado correctamente.";
+                return (codigo, mensaje);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error enviando correo: {ex.Message}");
+                return (-1, $"No se pudo enviar el correo de validación. Intenta nuevamente. {ex.Message} ");
             }
         }
     }
