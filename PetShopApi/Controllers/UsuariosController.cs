@@ -76,11 +76,14 @@ public class UsuariosController : ControllerBase
     public async Task<IActionResult> Confirmar([FromQuery] string token)
     {
         if (string.IsNullOrEmpty(token)) return BadRequest("Token no proporcionado.");
-    
         try
         {
             bool confirmado = await _usuarioDAL.ConfirmarEmail(token);
             if (confirmado)
+            {
+                return Ok("¡ÉXITO! La cuenta ha sido activada correctamente.");
+            }
+            /*if (confirmado)
             {
                 string htmlResponse = $@"
                 <html>
@@ -102,8 +105,11 @@ public class UsuariosController : ControllerBase
                 </html>";
 
                 return Content(htmlResponse, "text/html");
+            }*/
+            else
+            {
+                return BadRequest("El enlace es inválido o ya ha expirado.");
             }
-            return BadRequest("El enlace es inválido o ya ha expirado.");
         }
         catch (Exception ex)
         {
