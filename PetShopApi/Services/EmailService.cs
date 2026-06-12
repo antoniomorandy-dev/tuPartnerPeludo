@@ -35,7 +35,7 @@ namespace PetShopApi.Services
                 message.Subject = "Activa tu cuenta de Partner Peludo";
 
                 message.Body = new TextPart("html") {
-                    Text = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/confirmar?token={token}'>Validar cuenta</a></p>"
+                    Text = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/api/Usuarios/confirmar?token={token}'>Validar cuenta</a></p>"
                 };
 
                 using (var client = new MailKit.Net.Smtp.SmtpClient()) 
