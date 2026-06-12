@@ -70,7 +70,7 @@ public class UsuariosController : ControllerBase
             return StatusCode(500, new { codigo = -1, mensaje = "Error: " + ex.Message });
         }
     }
-
+    [AllowAnonymous]
     [HttpGet("/api/Usuarios/confirmar")]
     public async Task<IActionResult> Confirmar([FromQuery] string token)
     {
