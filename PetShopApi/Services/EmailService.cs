@@ -17,7 +17,7 @@ namespace PetShopApi.Services
         public EmailService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _baseUrl = _configuration["EmailSettings:BaseUrl"];
+            _baseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5000";
         }
         public async Task<(int emailCodigo, string emailMensaje)> EnviarCorreoValidacion(string emailDestino, string nombre, string token)
         {
