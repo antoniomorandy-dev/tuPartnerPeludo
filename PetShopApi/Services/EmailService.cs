@@ -4,6 +4,8 @@ using System.Net.Mail;
 using System.Net.Http;
 using System.Text;
 using System.Text.Json;
+using MailKit.Net.Smtp;
+using MimeKit;
 
 namespace PetShopApi.Services
 {
@@ -19,42 +21,37 @@ namespace PetShopApi.Services
         }
         public async Task<(int emailCodigo, string emailMensaje)> EnviarCorreoValidacion(string emailDestino, string nombre, string token)
         {
-            var url = "https://api.brevo.com/v3/smtp/email";
-            
-            // 1. Asegúrate de que esta variable en Render tenga la clave xkeysib-...
-            var apiKey = _configuration["EmailSettings:SenderPassword"];
+            var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
+            var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
+            var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
+            var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS");
+            var emailFrom = Environment.GetEnvironmentVariable("EMAIL_FROM");
 
-            // 2. Asegúrate de que esta variable en Render sea el correo verificado de tu panel
-            var senderEmail = _configuration["EmailSettings:SenderEmail"];
-
-            using (var httpClient = new HttpClient())
+            try
             {
-                httpClient.DefaultRequestHeaders.Add("api-key", apiKey);
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Tu Partner Peludo", emailFrom));
+                message.To.Add(new MailboxAddress(nombre, emailDestino));
+                message.Subject = "Activa tu cuenta de Partner Peludo";
 
-                var payload = new
-                {
-                    sender = new { name = "Tu Partner Peludo", email = senderEmail },
-                    to = new[] { new { email = emailDestino, name = nombre } },
-                    subject = "Activa tu cuenta de Partner Peludo",
-                    htmlContent = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/confirmar?token={token}'>Validar cuenta</a></p>"
+                message.Body = new TextPart("html") {
+                    Text = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/confirmar?token={token}'>Validar cuenta</a></p>"
                 };
 
-                var json = JsonSerializer.Serialize(payload);
-                var content = new StringContent(json, Encoding.UTF8, "application/json");
+                using (var client = new SmtpClient())
+                {
+                    await client.ConnectAsync(smtpHost, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(smtpUser, smtpPass);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
 
-                try 
-                {
-                    var response = await httpClient.PostAsync(url, content);
-                    
-                    if (response.IsSuccessStatusCode)
-                        return (1, "Correo enviado correctamente");
-                    else
-                        return (-1, "Error de Brevo: " + await response.Content.ReadAsStringAsync());
-                }
-                catch (Exception ex)
-                {
-                    return (-1, "Error de conexión: " + ex.Message);
-                }
+                return 1; 
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Error SMTP: {ex.Message}");
+                return -1;
             }
         }
     }

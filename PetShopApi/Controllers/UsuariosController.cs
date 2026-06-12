@@ -44,7 +44,7 @@ public class UsuariosController : ControllerBase
                 //{
                 //    return Ok(new { regCodigo, regMensaje });
                 //}
-                if (emailCodigo != 1) 
+                if (emailCodigo == 1) 
                 {
                     return Ok(new { emailCodigo, emailMensaje });
                 }
