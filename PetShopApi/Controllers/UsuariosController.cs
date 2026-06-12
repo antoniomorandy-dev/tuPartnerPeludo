@@ -72,7 +72,7 @@ public class UsuariosController : ControllerBase
     }
 
     [HttpGet("confirmar")]
-    public async Task<IActionResult> Confirmar(string token)
+    public async Task<IActionResult> Confirmar([FromQuery] string token)
     {
         if (string.IsNullOrEmpty(token)) return BadRequest("Token no proporcionado.");
         try
