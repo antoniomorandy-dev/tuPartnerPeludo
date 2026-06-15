@@ -35,21 +35,26 @@ public class UsuariosController : ControllerBase
 
             var (regCodigo, regMensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
             Console.WriteLine("Mensaje de RegistrarUsuario: " + regMensaje);
+
+            if (regCodigo != 1)
+            {
+                await _usuarioDAL.EliminaRegistroUsuario(user);
+                return BadRequest(new SalidaMod { Codigo = regCodigo, Mensaje = regMensaje });
+            }
             if (regCodigo == 1)
             {
                 //return Ok(new { regCodigo, regMensaje });
                 var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(user.Email, user.Nombre ?? "Usuario", tokenEmail);
-                Console.WriteLine("Envio Correo: " + emailMensaje);
+                if (emailCodigo == 1) 
+                {
+                    Console.WriteLine("Envio Correo: " + emailMensaje);
+                    return Ok(new SalidaMod { Codigo = emailCodigo, Mensaje = emailMensaje });
+                }
                 //var (wsCodigo, wsMensaje) = await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
-
                 //if (emailCodigo == 1 && wsCodigo == 1)
                 //{
                 //    return Ok(new { regCodigo, regMensaje });
                 //}
-                if (emailCodigo == 1) 
-                {
-                    return Ok(new { emailCodigo, emailMensaje });
-                }
                 //else if (wsCodigo != 1)
                 //{
                 //    return Ok(new { wsCodigo, wsMensaje });
@@ -58,7 +63,7 @@ public class UsuariosController : ControllerBase
                 {
                     Console.WriteLine("Elimino registro: " + regMensaje);
                     (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
-                    return StatusCode(500, new { codigo = -1, mensaje = $"Error desconocido en la validación. {emailMensaje}" } );
+                    return StatusCode(500, new SalidaMod { codigo = emailCodigo, mensaje = $"Error desconocido en la validación. {emailMensaje}" } );
                 }
                 
             }
@@ -66,12 +71,12 @@ public class UsuariosController : ControllerBase
             {
                 Console.WriteLine("Elimino registro: " + regMensaje);
                 (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
-                return BadRequest(new { regCodigo, regMensaje });
+                return BadRequest(new SalidaMod { codigo = regCodigo, mensaje = regMensaje });
             }
         }
         catch (Exception ex)
         {
-            return StatusCode(500, new { codigo = -1, mensaje = "Error: " + ex.Message });
+            return StatusCode(500, new SalidaMod { codigo = -1, mensaje = "Error: " + ex.Message });
         }
     }
     [AllowAnonymous]
