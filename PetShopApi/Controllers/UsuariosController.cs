@@ -34,12 +34,12 @@ public class UsuariosController : ControllerBase
             string tokenEmail = Guid.NewGuid().ToString();
 
             var (regCodigo, regMensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
-            Console.WriteLine("Mensaje de RegistrarUsuario: " + regMensaje)
+            Console.WriteLine("Mensaje de RegistrarUsuario: " + regMensaje);
             if (regCodigo == 1)
             {
                 //return Ok(new { regCodigo, regMensaje });
                 var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(user.Email, user.Nombre ?? "Usuario", tokenEmail);
-                Console.WriteLine("Envio Correo: " + emailMensaje)
+                Console.WriteLine("Envio Correo: " + emailMensaje);
                 //var (wsCodigo, wsMensaje) = await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
 
                 //if (emailCodigo == 1 && wsCodigo == 1)
@@ -56,7 +56,7 @@ public class UsuariosController : ControllerBase
                 //}
                 else 
                 {
-                    Console.WriteLine("Elimino registro: " + regMensaje)
+                    Console.WriteLine("Elimino registro: " + regMensaje);
                     (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
                     return StatusCode(500, new { codigo = -1, mensaje = $"Error desconocido en la validación. {emailMensaje}" } );
                 }
@@ -64,7 +64,7 @@ public class UsuariosController : ControllerBase
             }
             else
             {
-                Console.WriteLine("Elimino registro: " + regMensaje)
+                Console.WriteLine("Elimino registro: " + regMensaje);
                 (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
                 return BadRequest(new { regCodigo, regMensaje });
             }
