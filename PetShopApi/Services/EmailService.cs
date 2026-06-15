@@ -1,4 +1,5 @@
-﻿using System.Buffers.Text;
+﻿using PetShopApi.Models;
+using System.Buffers.Text;
 using System.Net;
 using System.Net.Mail;
 using System.Net.Http;
