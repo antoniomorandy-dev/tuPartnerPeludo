@@ -34,11 +34,12 @@ public class UsuariosController : ControllerBase
             string tokenEmail = Guid.NewGuid().ToString();
 
             var (regCodigo, regMensaje) = await _usuarioDAL.RegistrarUsuario(user, tokenEmail, codigoWS);
-
+            Console.WriteLine("Mensaje de RegistrarUsuario: " + regMensaje)
             if (regCodigo == 1)
             {
                 //return Ok(new { regCodigo, regMensaje });
                 var (emailCodigo, emailMensaje) = await _emailService.EnviarCorreoValidacion(user.Email, user.Nombre ?? "Usuario", tokenEmail);
+                Console.WriteLine("Envio Correo: " + emailMensaje)
                 //var (wsCodigo, wsMensaje) = await _whatsappService.EnviarCodigoValidacion(user.Telefono, codigoWS);
 
                 //if (emailCodigo == 1 && wsCodigo == 1)
@@ -55,6 +56,7 @@ public class UsuariosController : ControllerBase
                 //}
                 else 
                 {
+                    Console.WriteLine("Elimino registro: " + regMensaje)
                     (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
                     return StatusCode(500, new { codigo = -1, mensaje = $"Error desconocido en la validación. {emailMensaje}" } );
                 }
@@ -62,6 +64,7 @@ public class UsuariosController : ControllerBase
             }
             else
             {
+                Console.WriteLine("Elimino registro: " + regMensaje)
                 (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
                 return BadRequest(new { regCodigo, regMensaje });
             }
@@ -84,6 +87,7 @@ public class UsuariosController : ControllerBase
                 string htmlResponse = $@"
                 <html>
                     <head>
+                        <meta charset='UTF-8'> 
                         <style>
                             body {{ font-family: 'Segoe UI', sans-serif; display: flex; justify-content: center; align-items: center; height: 100vh; background-color: #f4f7f6; }}
                             .card {{ background: white; padding: 2rem; border-radius: 10px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); text-align: center; }}
@@ -95,7 +99,7 @@ public class UsuariosController : ControllerBase
                         <div class='card'>
                             <h1>¡Cuenta activada con éxito!</h1>
                             <p>Tu correo ha sido verificado. Ya eres parte de la comunidad de <b>PetShop</b>.</p>
-                            <a href='https://tupartnerpeludo.onrender.com/login' class='btn'>Iniciar Sesión</a>
+                            <a href='https://amorandy.github.io/tuPartnerPeludo/index.html' class='btn'>Iniciar Sesión</a>
                         </div>
                     </body>
                 </html>";

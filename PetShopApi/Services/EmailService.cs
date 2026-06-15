@@ -49,7 +49,6 @@ namespace PetShopApi.Services
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Error SMTP: {ex.Message}");
                 return (-1, "Error SMTP: " + ex.Message);
             }
         }
