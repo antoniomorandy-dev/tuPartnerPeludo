@@ -73,7 +73,7 @@ namespace PetShopApi.DAL
                 }
             }
         }
-        public async Task<(int? codigo, string? mensaje)> EliminaRegistroUsuario(Usuario user)
+        public async Task<(SalidaMod)> EliminaRegistroUsuario(Usuario user)
         {
             using (var conexion = _conexionFll.ObtenerConexion())
             {
@@ -86,13 +86,9 @@ namespace PetShopApi.DAL
 
                     int filas = await cmd.ExecuteNonQueryAsync();
                     if (filas > 0)
-                    {
-                        return (1, "Usuario eliminado correctamente.");
-                    }
+                        return new SalidaMod { Codigo = 1, Mensaje = "Usuario eliminado correctamente." };
                     else
-                    {
-                        return (0, "No se encontró un usuario.");
-                    }
+                        return new SalidaMod { Codigo = 0, Mensaje = "No se encontró un usuario." };
                 }
             }
         }
