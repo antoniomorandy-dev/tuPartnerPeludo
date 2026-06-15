@@ -62,7 +62,7 @@ public class UsuariosController : ControllerBase
                 else 
                 {
                     Console.WriteLine("Elimino registro: " + regMensaje);
-                    (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
+                    await _usuarioDAL.EliminaRegistroUsuario(user);
                     return StatusCode(500, new SalidaMod { codigo = emailCodigo, mensaje = $"Error desconocido en la validación. {emailMensaje}" } );
                 }
                 
@@ -70,7 +70,7 @@ public class UsuariosController : ControllerBase
             else
             {
                 Console.WriteLine("Elimino registro: " + regMensaje);
-                (regCodigo, regMensaje) = await _usuarioDAL.EliminaRegistroUsuario(user);
+                await _usuarioDAL.EliminaRegistroUsuario(user);
                 return BadRequest(new SalidaMod { codigo = regCodigo, mensaje = regMensaje });
             }
         }
