@@ -22,11 +22,19 @@ namespace PetShopApi.Services
         }
         public async Task<SalidaMod> EnviarCorreoValidacion(string emailDestino, string nombre, string token)
         {
+            /*
             var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
             var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
             var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
             var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS");
             var emailFrom = Environment.GetEnvironmentVariable("EMAIL_FROM");
+            */
+            var smtpHost = _configuration["EmailSettings:SMTP_HOST"];
+            var smtpPort = int.Parse(_configuration["EmailSettings:SMTP_PORT"] ?? "587");
+            var smtpUser = _configuration["EmailSettings:SMTP_USER"];
+            var smtpPass = _configuration["EmailSettings:SMTP_PASS"];
+            var emailFrom = _configuration["EmailSettings:EMAIL_FROM"];
+
             if (string.IsNullOrWhiteSpace(smtpHost) || string.IsNullOrWhiteSpace(smtpUser) || string.IsNullOrWhiteSpace(smtpPass) || string.IsNullOrWhiteSpace(emailFrom))
             {
                 throw new InvalidOperationException("SMTP_HOST, SMTP_USER, SMTP_PASS o EMAIL_FROM no están configurados en las variables de entorno.");
@@ -55,6 +63,46 @@ namespace PetShopApi.Services
             catch (Exception ex)
             {
                 return new SalidaMod { Codigo = -1, Mensaje = "Error SMTP: " + ex.Message };
+            }
+        }
+        public async Task<SalidaMod> EnviarEmailAsync(string emailDestino, string asunto, string cuerpoHtml)
+        {
+            // 1. Obtenemos las configuraciones igual que en tu método de validación
+            var smtpHost = _configuration["EmailSettings:SMTP_HOST"];
+            var smtpPort = int.Parse(_configuration["EmailSettings:SMTP_PORT"] ?? "587");
+            var smtpUser = _configuration["EmailSettings:SMTP_USER"];
+            var smtpPass = _configuration["EmailSettings:SMTP_PASS"];
+            var emailFrom = _configuration["EmailSettings:EMAIL_FROM"];
+
+            if (string.IsNullOrWhiteSpace(smtpHost) || string.IsNullOrWhiteSpace(smtpUser) ||
+                string.IsNullOrWhiteSpace(smtpPass) || string.IsNullOrWhiteSpace(emailFrom))
+            {
+                return new SalidaMod { Codigo = -1, Mensaje = "Error de configuración SMTP." };
+            }
+
+            try
+            {
+                // 2. Construimos el mensaje
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Tu Partner Peludo", emailFrom));
+                message.To.Add(new MailboxAddress("", emailDestino));
+                message.Subject = asunto;
+                message.Body = new TextPart("html") { Text = cuerpoHtml };
+
+                // 3. Enviamos usando MailKit
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                {
+                    await client.ConnectAsync(smtpHost, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(smtpUser, smtpPass);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+
+                return new SalidaMod { Codigo = 1, Mensaje = "Correo enviado correctamente." };
+            }
+            catch (Exception ex)
+            {
+                return new SalidaMod { Codigo = -1, Mensaje = "Error al enviar correo: " + ex.Message };
             }
         }
     }

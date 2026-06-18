@@ -23,8 +23,10 @@ namespace PetShopApi.DAL
 */
         public MySqlConnection ObtenerConexion()
         {
-            string? connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
-        
+            //string? connectionString = Environment.GetEnvironmentVariable("DB_CONNECTION_STRING");
+            string? connectionString = _configuration["ConnectionStrings:CleverCloudMySql"];
+
+
             if (string.IsNullOrEmpty(connectionString))
             {
                 connectionString = _configuration.GetConnectionString("CleverCloudMySql");

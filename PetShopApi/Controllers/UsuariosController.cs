@@ -163,39 +163,55 @@ public class UsuariosController : ControllerBase
     [HttpPost("solicitar-recuperacion")]
     public async Task<IActionResult> SolicitarRecuperacion([FromBody] RecuperarRequest request)
     {
-        // 1. Validar entrada
-        if (request == null || string.IsNullOrWhiteSpace(request.Telefono))
-        {
-            return Ok(new { codigo = 0, mensaje = "Si el número existe, recibirás un mensaje." });
-        }
+        // 1. Validar entrada según el método
+        if (string.IsNullOrWhiteSpace(request.Metodo))
+            return BadRequest(new { mensaje = "El método de recuperación es requerido." });
 
-        // 2. Usar SalidaMod internamente
+        Usuario? usuario = null;
         SalidaMod salida = new SalidaMod();
-        var usuario = await _usuarioDAL.ObtenerPorTelefono(request.Telefono, salida);
 
+        if (request.Metodo == "WHATSAPP")
+            usuario = await _usuarioDAL.ObtenerPorTelefono(request.Telefono ?? "", salida);
+        else if (request.Metodo == "EMAIL")
+            usuario = await _usuarioDAL.ObtenerPorEmail(request.Email ?? "", salida);
+
+        // Seguridad: Mensaje genérico siempre para evitar enumeración de usuarios
         if (usuario == null)
-        {
-            return Ok(new { codigo = 0, mensaje = "Si el número existe, recibirás un mensaje." });
-        }
-
-        if (string.IsNullOrEmpty(usuario.Telefono))
-        {
-            return Ok(new { codigo = 0, mensaje = "Si el número existe, recibirás un mensaje." });
-        }
+            return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
 
         // 3. Generar Token y actualizar
         string token = Guid.NewGuid().ToString();
-        usuario.TokenRecuperacion = token;
-        usuario.FechaExpiracionToken = DateTime.Now.AddMinutes(15);
-
-        // NOTA: Usa el método de tu DAL para guardar, ya que SaveChanges() no existe en tu clase
         bool guardado = await _usuarioDAL.ActualizarTokenRecuperacion(usuario.UsuarioID, token);
 
         if (guardado)
         {
-            string enlace = $"https://amorandy.github.io/reset-password.html?token={token}";
-            string mensajeWs = $"Hola {usuario.Nombre}, haz clic aquí para restablecer tu contraseña: {enlace}";
-            await _whatsappService.EnviarMensajeAsync(usuario.Telefono, mensajeWs);
+            if (request.Metodo == "WHATSAPP")
+            {
+                if (!string.IsNullOrWhiteSpace(usuario.Telefono))
+                {
+                    string enlace = $"https://amorandy.github.io/reset-password.html?token={token}";
+                    await _whatsappService.EnviarMensajeAsync(usuario.Telefono, $"Hola {usuario.Nombre}, tu enlace: {enlace}");
+                }
+                else
+                                    {
+                    return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
+                }
+            }
+            else // EMAIL
+            {
+                if (!string.IsNullOrWhiteSpace(usuario.Email))
+                {
+                    // Nota: Aquí usarías tu EmailService
+                    string enlace = $"https://tupartnerpeludo.onrender.com/reset-password?token={token}";
+                    string cuerpo = $"<h1>Recuperación de contraseña</h1><p>Hola {usuario.Nombre}, haz clic aquí: <a href='{enlace}'>Restablecer</a></p>";
+                    await _emailService.EnviarEmailAsync(usuario.Email, "Recupera tu contraseña", cuerpo);
+                }
+                else
+                {
+                    return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
+                }
+            }
+
             return Ok(new { codigo = 1, mensaje = "Enlace enviado con éxito." });
         }
 
