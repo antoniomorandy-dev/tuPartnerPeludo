@@ -45,7 +45,7 @@ if (window.location.pathname.includes('reset-password.html')) {
             e.preventDefault();
 
             if (!tokenActual) {
-                toastr.error("Token no encontrado. Solicita un nuevo enlace.");
+                EnviarMensaje(-1, "Token no encontrado. Solicita un nuevo enlace.");
                 return;
             }
 
@@ -66,16 +66,16 @@ if (window.location.pathname.includes('reset-password.html')) {
                 const data = await response.json();
                 
                 if (data.codigo === 1) {
-                    toastr.success("¡Contraseña actualizada correctamente!");
+                    EnviarMensaje(1, "¡Contraseña actualizada correctamente!");
                     setTimeout(() => { window.location.href = "index.html"; }, 2000);
                 } else {
-                    toastr.warning(data.mensaje);
+                    EnviarMensaje(0, data.mensaje);
                     btn.disabled = false;
                     btn.innerText = "Guardar Cambios";
                 }
             } catch (error) {
                 console.error("Error:", error);
-                toastr.error("No se pudo conectar con el servidor.");
+                EnviarMensaje(-1, "No se pudo conectar con el servidor.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";
             }
