@@ -215,7 +215,7 @@ public class UsuariosController : ControllerBase
                 if (!string.IsNullOrWhiteSpace(usuario.Email))
                 {
                     // Nota: Aquí usarías tu EmailService
-                    string enlace = $"https://tupartnerpeludo.onrender.com/reset-password?token={token}";
+                    string enlace = $"https://amorandy.github.io/reset-password.html?token={token}";
                     string cuerpo = $"<h1>Recuperación de contraseña</h1><p>Hola {usuario.Nombre}, haz clic aquí: <a href='{enlace}'>Restablecer</a></p>";
                     await _emailService.EnviarEmailAsync(usuario.Email, "Recupera tu contraseña", cuerpo);
                 }
