@@ -14,12 +14,12 @@ public class UsuariosController : ControllerBase
     private readonly IWhatsappService _whatsappService;
     private readonly IConfiguration _configuration;
 
-    public UsuariosController(UsuarioDAL usuarioDAL, EmailService emailService, IWhatsappService whatsappService)
+    public UsuariosController(UsuarioDAL usuarioDAL, EmailService emailService, IWhatsappService whatsappService, IConfiguration configuration)
     {
         _usuarioDAL = usuarioDAL;
         _emailService = emailService;
         _whatsappService = whatsappService;
-        _configuration = new ConfigurationBuilder().AddEnvironmentVariables().Build();
+        _configuration = configuration;
     }
 
     [HttpPost("registrar")]
