@@ -92,6 +92,57 @@ async function registrarUsuario(datosUsuario) {
     }
 }
 
+// Función para mostrar/ocultar campos según la selección
+function alternarCamposRecuperacion() {
+    const metodo = document.getElementById("metodo-recuperacion").value;
+    const campoWs = document.getElementById("campo-whatsapp");
+    const campoEmail = document.getElementById("campo-email");
+
+    if (metodo === "WHATSAPP") {
+        campoWs.classList.remove("d-none");
+        campoEmail.classList.add("d-none");
+    } else {
+        campoWs.classList.add("d-none");
+        campoEmail.classList.remove("d-none");
+    }
+}
+
+// Nueva versión de la función de solicitud
+async function solicitarRecuperacionAdaptada() {
+    const metodo = document.getElementById("metodo-recuperacion").value;
+    const btn = document.getElementById("btnEnviarRecuperar");
+    
+    // Obtener valores según el método
+    const payload = {
+        Metodo: metodo,
+        Telefono: metodo === "WHATSAPP" ? document.getElementById("rec-telefono").value.replace(/\D/g, "") : null,
+        Email: metodo === "EMAIL" ? document.getElementById("rec-email").value : null
+    };
+
+    btn.disabled = true;
+    btn.innerText = "Enviando...";
+
+    try {
+        const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/solicitar-recuperacion`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload)
+        });
+
+        const data = await response.json();
+        EnviarMensaje(data.codigo, data.mensaje);
+        
+        if (data.codigo === 1) {
+            setTimeout(() => mostrarLogin(), 3000);
+        }
+    } catch (error) {
+        EnviarMensaje(-1, "Error al conectar con el servidor.");
+    } finally {
+        btn.disabled = false;
+        btn.innerText = "ENVIAR ENLACE";
+    }
+}
+
 async function solicitarRecuperacion() {
     const telefonoInput = document.getElementById("recuperar-telefono");
     if (!telefonoInput) return;
