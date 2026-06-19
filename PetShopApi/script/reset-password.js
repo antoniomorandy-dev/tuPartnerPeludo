@@ -1,7 +1,10 @@
 // Estas constantes son globales pero seguras
-const urlParams = new URLSearchParams(window.location.search);
-const tokenActual = urlParams.get('token');
+//const urlParams = new URLSearchParams(window.location.search);
 
+if (typeof urlParams === 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenActual = urlParams.get('token');
+}
 // Solo ejecutamos lógica si estamos en la página correcta
 if (window.location.pathname.includes('reset-password.html')) {
     
