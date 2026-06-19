@@ -273,7 +273,7 @@ namespace PetShopApi.DAL
                 using (var conexion = _conexionFll.ObtenerConexion())
                 {
                     await conexion.OpenAsync();
-                    string query = "SELECT UsuarioID, Nombre, Email, Telefono FROM Usuarios WHERE Email = @Email";
+                    string query = "SELECT UsuarioID, Nombre, Apellido, Email, Telefono FROM Usuarios WHERE Email = @Email";
 
                     using (var cmd = new MySqlCommand(query, conexion))
                     {
@@ -286,6 +286,7 @@ namespace PetShopApi.DAL
                                 {
                                     UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                                     Nombre = reader["Nombre"].ToString(),
+                                    Apellido = reader["Apellido"].ToString(),
                                     Email = reader["Email"].ToString(),
                                     Telefono = reader["Telefono"].ToString()
                                 };
@@ -313,7 +314,7 @@ namespace PetShopApi.DAL
                 string sql = @"UPDATE Usuarios 
                        SET TokenRecuperacion = @Token, 
                            FechaExpiracionToken = @Expiracion 
-                       WHERE IdUsuario = @Id";
+                       WHERE UsuarioID = @Id";
 
                 using var cmd = new MySqlCommand(sql, conexion);
                 cmd.Parameters.AddWithValue("@Token", token);

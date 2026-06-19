@@ -161,6 +161,7 @@ public class UsuariosController : ControllerBase
         return BadRequest(new { codigo = 0, mensaje = "Código inválido" });
     }
     [HttpPost("solicitar-recuperacion")]
+    [AllowAnonymous]
     public async Task<IActionResult> SolicitarRecuperacion([FromBody] RecuperarRequest request)
     {
         // 1. Validar entrada según el método
@@ -171,13 +172,25 @@ public class UsuariosController : ControllerBase
         SalidaMod salida = new SalidaMod();
 
         if (request.Metodo == "WHATSAPP")
+        {
             usuario = await _usuarioDAL.ObtenerPorTelefono(request.Telefono ?? "", salida);
-        else if (request.Metodo == "EMAIL")
+            if (usuario == null)
+            {
+                return Ok(new { codigo = 1, mensaje = "No existen cuentas asociadas a este numero telefonico" });
+            }
+        }
+            
+        if (request.Metodo == "EMAIL")
+        {
             usuario = await _usuarioDAL.ObtenerPorEmail(request.Email ?? "", salida);
+            if (usuario == null)
+            {
+                return Ok(new { codigo = 1, mensaje = "No existen cuentas asociadas a este correo" });
+            }
+        }
 
-        // Seguridad: Mensaje genérico siempre para evitar enumeración de usuarios
-        if (usuario == null)
-            return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
+        //if (usuario == null)
+        //    return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
 
         // 3. Generar Token y actualizar
         string token = Guid.NewGuid().ToString();
