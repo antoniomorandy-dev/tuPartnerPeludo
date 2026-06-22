@@ -1,5 +1,6 @@
 // Estas constantes son globales pero seguras
-//const urlParams = new URLSearchParams(window.location.search);
+const urlParams = new URLSearchParams(window.location.search);
+const tokenActual = urlParams.get('token');
 
 if (typeof urlParams === 'undefined') {
     const urlParams = new URLSearchParams(window.location.search);
