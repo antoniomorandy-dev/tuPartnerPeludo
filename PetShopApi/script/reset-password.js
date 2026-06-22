@@ -1,11 +1,8 @@
-// Estas constantes son globales pero seguras
 const urlParams = new URLSearchParams(window.location.search);
 const tokenActual = urlParams.get('token');
 
-// Solo ejecutamos lógica si estamos en la página correcta
 if (window.location.pathname.includes('reset-password.html')) {
     
-    // Capturamos los elementos una vez que sabemos que estamos en la página correcta
     const pass1 = document.getElementById('pass1');
     const pass2 = document.getElementById('pass2');
     const btn = document.getElementById('btnGuardar');
@@ -34,7 +31,6 @@ if (window.location.pathname.includes('reset-password.html')) {
         btn.disabled = !(reglas.mayus && reglas.minus && reglas.numero && reglas.largo && coinciden);
     };
 
-    // Agregamos los listeners solo aquí
     if (pass1 && pass2) {
         pass1.addEventListener('input', validarPassword);
         pass2.addEventListener('input', validarPassword);
@@ -83,7 +79,6 @@ if (window.location.pathname.includes('reset-password.html')) {
     }
 }
 
-// La función auxiliar puede estar fuera, no hace daño
 function actualizarCheck(id, cumple) {
     const el = document.getElementById(id);
     if (!el) return;

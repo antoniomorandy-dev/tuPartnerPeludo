@@ -3,7 +3,6 @@ using PetShopApi.Models;
 
 namespace PetShopApi.Services
 {
-    // Definimos un record para el resultado de EnviarCodigoValidacion
     public record CodigoValidacionResult(int Codigo, string Mensaje);
 
     public interface IWhatsappService

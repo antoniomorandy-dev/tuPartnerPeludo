@@ -15,36 +15,9 @@ namespace PetShopApi.DAL
         {
             _conexionFll = conexionFll;
         }
-        //public async Task<bool> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
-        //{
-        //    using (var conexion = _conexionFll.ObtenerConexion())
-        //    {
-        //        await conexion.OpenAsync();
-
-        //        string sql = @"INSERT INTO Usuarios 
-        //               (Nombre, Apellido, Email, Telefono, PasswordHash, TokenValidacion, CodigoWhatsApp, EmailValidado) 
-        //               VALUES 
-        //               (@Nombre, @Apellido, @Email, @Telefono, @Pass, @TokenEmail, @CodigoWS, 0)";
-
-        //        using (var cmd = new MySqlCommand(sql, conexion))
-        //        {
-        //            cmd.Parameters.AddWithValue("@Nombre", user.Nombre);
-        //            cmd.Parameters.AddWithValue("@Apellido", user.Apellido ?? "");
-        //            cmd.Parameters.AddWithValue("@Email", user.Email);
-        //            cmd.Parameters.AddWithValue("@Telefono", user.Telefono);
-        //            cmd.Parameters.AddWithValue("@Pass", BCrypt.Net.BCrypt.HashPassword(user.Password));
-
-        //            cmd.Parameters.AddWithValue("@TokenEmail", tokenEmail);
-        //            cmd.Parameters.AddWithValue("@CodigoWS", codigoWhatsApp);
-
-        //            int filasAfectadas = await cmd.ExecuteNonQueryAsync();
-        //            return filasAfectadas > 0;
-        //        }
-        //    }
-        //}
+        
         public async Task<SalidaMod> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
         {
-            //string codigoWhatsApp = new Random().Next(100000, 999999).ToString();
             using (var conexion = _conexionFll.ObtenerConexion())
             {
                 await conexion.OpenAsync();
@@ -52,7 +25,6 @@ namespace PetShopApi.DAL
                 {
                     cmd.CommandType = CommandType.StoredProcedure;
 
-                    // Parámetros de ENTRADA (IN)
                     cmd.Parameters.AddWithValue("@p_Nombre", user.Nombre);
                     cmd.Parameters.AddWithValue("@p_Apellido", user.Apellido?? "Sin apellido");
                     cmd.Parameters.AddWithValue("@p_Email", user.Email);
@@ -61,7 +33,6 @@ namespace PetShopApi.DAL
                     cmd.Parameters.AddWithValue("@p_TokenEmail", tokenEmail);
                     cmd.Parameters.AddWithValue("@p_CodigoWS", codigoWhatsApp);
 
-                    // Parámetros de SALIDA (OUT)
                     var pCodigo = new MySqlParameter("@p_codigo", MySqlDbType.Int32) { Direction = ParameterDirection.Output };
                     var pMensaje = new MySqlParameter("@p_mensaje", MySqlDbType.VarChar) { Size = 255, Direction = ParameterDirection.Output };
                     cmd.Parameters.Add(pCodigo);
@@ -122,7 +93,6 @@ namespace PetShopApi.DAL
                 {
                     await conexion.OpenAsync();
 
-                    // Llamamos al SP para ver si el usuario puede intentar loguearse
                     using (var cmd = new MySqlCommand("sp_ValidarLogin", conexion))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
@@ -140,7 +110,6 @@ namespace PetShopApi.DAL
                         }
                     }
 
-                    // Si llegamos aquí, el usuario existe y no está bloqueado. Obtenemos sus datos reales.
                     var cmdUser = new MySqlCommand("SELECT UsuarioID, Nombre, Email, PasswordHash, IntentosFallidos FROM Usuarios WHERE Email = @Email", conexion);
                     cmdUser.Parameters.AddWithValue("@Email", email);
 
@@ -157,18 +126,14 @@ namespace PetShopApi.DAL
                             string hash = reader["PasswordHash"]?.ToString() ?? string.Empty;
                             reader.Close();
 
-                            // VERIFICACIÓN DE PASSWORD
                             if (BCrypt.Net.BCrypt.Verify(password, hash))
                             {
-                                // ÉXITO: Resetear intentos
                                 await EjecutarQuery("UPDATE Usuarios SET IntentosFallidos = 0, FechaBloqueo = NULL WHERE Email = @Email", email, conexion);
-                                // Crear sesión (código previo de insertar SesionesActivas...)
                                 salida.Codigo = 1; salida.Mensaje = "¡Bienvenido!";
                                 return (usuario, salida, token);
                             }
                             else
                             {
-                                // FALLO: Incrementar intentos
                                 int nuevosIntentos = (usuario.IntentosFallidos ?? 0) + 1;
                                 string msg = "Contraseña incorrecta.";
 
@@ -230,7 +195,6 @@ namespace PetShopApi.DAL
                 }
             }
         }
-        // Método 1: Buscar usuario por teléfono
         public async Task<(Usuario?, SalidaMod)> ObtenerPorTelefono(string telefono, SalidaMod salida)
         {
             try
@@ -251,7 +215,6 @@ namespace PetShopApi.DAL
                             UsuarioID = reader.GetInt32("UsuarioID"),
                             Nombre = reader.GetString("Nombre"),
                             Telefono = reader.GetString("Telefono")
-                            // Agrega aquí los demás campos que necesites mapear
                         };
                         return (usuario, new SalidaMod { Codigo = 1, Mensaje = "Usuario encontrado." });
                     }
@@ -262,7 +225,7 @@ namespace PetShopApi.DAL
             catch (Exception ex)
             {
                 salida = new SalidaMod { Codigo = -1, Mensaje = $"Ocurrió un error al buscar el usuario: {ex.Message}" };
-                return (null, salida); // Retorna un usuario vacío en caso de error
+                return (null, salida);
             }
 
         }
@@ -304,13 +267,12 @@ namespace PetShopApi.DAL
             return (usuario, salida);
         }
 
-        // Método 2: Guardar el Token de recuperación
         public async Task<SalidaMod> ActualizarTokenRecuperacion(int idUsuario, string token)
         {
             SalidaMod salida = new SalidaMod();
             try
             {
-                DateTime expiracion = DateTime.Now.AddMinutes(15); // El token expirará en 15 minutos
+                DateTime expiracion = DateTime.Now.AddMinutes(15);
                 using var conexion = _conexionFll.ObtenerConexion();
                 await conexion.OpenAsync();
                 string sql = @"UPDATE Usuarios 
@@ -339,7 +301,6 @@ namespace PetShopApi.DAL
             {
                 await conexion.OpenAsync();
 
-                // Solo actualiza si el token coincide y no ha pasado la fecha de expiración
                 string sql = @"UPDATE Usuarios 
                        SET PasswordHash = @Pass, 
                            TokenRecuperacion = NULL, 

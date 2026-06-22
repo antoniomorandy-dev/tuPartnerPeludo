@@ -16,7 +16,6 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddControllers(options =>
 {
-    // Esto aplica el filtro a TODOS los controladores
     options.Filters.Add<ValidarSesionAttribute>();
 });
 builder.Services.AddEndpointsApiExplorer();

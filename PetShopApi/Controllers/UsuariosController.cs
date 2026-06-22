@@ -217,11 +217,10 @@ public class UsuariosController : ControllerBase
                     return Ok(new { codigo = 1, mensaje = "Si los datos existen, recibirás el enlace." });
                 }
             }
-            else // EMAIL
+            else
             {
                 if (!string.IsNullOrWhiteSpace(usuario.Email))
                 {
-                    // Nota: Aquí usarías tu EmailService
                     if (string.IsNullOrEmpty(paginaIndex)) return StatusCode(500, "La URL de la página de inicio no está configurada.");
                     string enlace = $"{paginaIndex}reset-password.html?token={token}";
                     string cuerpo = $"<h1>Recuperación de contraseña</h1><p>Hola {usuario.Nombre}, haz clic aquí: <a href='{enlace}'>Restablecer</a></p>";
@@ -242,17 +241,13 @@ public class UsuariosController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> RestablecerFinal([FromBody] RestablecerRequest request)
     {
-        // 1. Validaciones de entrada
         if (string.IsNullOrEmpty(request.Token) || string.IsNullOrEmpty(request.NuevaPassword))
         {
             return Ok(new { codigo = 0, mensaje = "Por favor, completa todos los campos." });
         }
 
-        // 2. Encriptar usando BCrypt (Igual que en tu método RegistrarUsuario)
-        //
         string passHash = BCrypt.Net.BCrypt.HashPassword(request.NuevaPassword);
 
-        // 3. Llamar a la DAL para actualizar en la base de datos
         bool exito = await _usuarioDAL.RestablecerPasswordFinal(request.Token, passHash);
 
         if (exito)

@@ -18,17 +18,10 @@ namespace PetShopApi.Services
         public EmailService(IConfiguration configuration)
         {
             _configuration = configuration;
-            _baseUrl = Environment.GetEnvironmentVariable("BASE_URL") ?? "http://localhost:5000";
+            _baseUrl = _configuration["BaseUrl"] ?? "http://localhost:5000";
         }
         public async Task<SalidaMod> EnviarCorreoValidacion(string emailDestino, string nombre, string token)
         {
-            /*
-            var smtpHost = Environment.GetEnvironmentVariable("SMTP_HOST");
-            var smtpPort = int.Parse(Environment.GetEnvironmentVariable("SMTP_PORT") ?? "587");
-            var smtpUser = Environment.GetEnvironmentVariable("SMTP_USER");
-            var smtpPass = Environment.GetEnvironmentVariable("SMTP_PASS");
-            var emailFrom = Environment.GetEnvironmentVariable("EMAIL_FROM");
-            */
             var smtpHost = _configuration["EmailSettings:SMTP_HOST"];
             var smtpPort = int.Parse(_configuration["EmailSettings:SMTP_PORT"] ?? "587");
             var smtpUser = _configuration["EmailSettings:SMTP_USER"];
@@ -67,7 +60,6 @@ namespace PetShopApi.Services
         }
         public async Task<SalidaMod> EnviarEmailAsync(string emailDestino, string asunto, string cuerpoHtml)
         {
-            // 1. Obtenemos las configuraciones igual que en tu método de validación
             var smtpHost = _configuration["EmailSettings:SMTP_HOST"];
             var smtpPort = int.Parse(_configuration["EmailSettings:SMTP_PORT"] ?? "587");
             var smtpUser = _configuration["EmailSettings:SMTP_USER"];
@@ -82,14 +74,12 @@ namespace PetShopApi.Services
 
             try
             {
-                // 2. Construimos el mensaje
                 var message = new MimeMessage();
                 message.From.Add(new MailboxAddress("Tu Partner Peludo", emailFrom));
                 message.To.Add(new MailboxAddress("", emailDestino));
                 message.Subject = asunto;
                 message.Body = new TextPart("html") { Text = cuerpoHtml };
 
-                // 3. Enviamos usando MailKit
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     await client.ConnectAsync(smtpHost, smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
