@@ -107,7 +107,7 @@ namespace PetShopApi.Services
                 message.Subject = "Se Actualizo su contraseña Tu Partner Peludo";
                 message.Body = new TextPart("html")
                 {
-                    Text = $"<p>Hola {nombre} {apellido}, tu contraseña ha sido actualizada correctamente.</p>"
+                    Text = $"<p>Hola {nombre} {apellido}, tu contraseña en \"Tu Partner Peludo\" ha sido actualizada correctamente.</p>"
                 };
                 using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {

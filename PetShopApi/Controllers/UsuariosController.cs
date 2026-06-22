@@ -199,7 +199,7 @@ public class UsuariosController : ControllerBase
         {
             return Ok(new { salida });
         }
-        salida = await _usuarioDAL.ActualizarTokenRecuperacion(usuario.UsuarioID, token);
+        salida = await _usuarioDAL.ActualizarTokenRecuperacion(usuario.UsuarioID ?? 0, token);
 
         if (salida.Codigo == 1)
         {
@@ -253,11 +253,11 @@ public class UsuariosController : ControllerBase
         {
             if (!string.IsNullOrEmpty(usuario.Email) && !string.IsNullOrEmpty(usuario.Nombre) && !string.IsNullOrEmpty(usuario.Apellido))
                 await _emailService.EnviarCorreoPasswordActualizada(usuario.Email, usuario.Nombre, usuario.Apellido, request.Token);
-            return Ok(new { codigo = 1, mensaje = "¡Contraseña actualizada con éxito!" });
+            return Ok(new { salida });
         }
         else
         {
-            return Ok(new { codigo = -1, mensaje = "El enlace es inválido o ya ha expirado." });
+            return Ok(new { salida });
         }
     }
 }

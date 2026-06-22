@@ -305,8 +305,8 @@ namespace PetShopApi.DAL
                     using (var cmd = new MySqlCommand("sp_ValidarYRestablecerPassword", db))
                     {
                         cmd.CommandType = CommandType.StoredProcedure;
-                        cmd.Parameters.AddWithValue("@Token", token);
-                        cmd.Parameters.AddWithValue("@NuevaPassword", nuevaPassword);
+                        cmd.Parameters.AddWithValue("@p_Token", token);
+                        cmd.Parameters.AddWithValue("@p_NuevaPassword", nuevaPassword);
 
                         using (var reader = cmd.ExecuteReader())
                         {
@@ -320,7 +320,7 @@ namespace PetShopApi.DAL
                                 };
                                 var Usuario = new Usuario
                                 {
-                                    UsuarioID = Convert.ToInt32(reader["IdUsuario"]),
+                                    UsuarioID = Convert.ToInt32(reader["UsuarioID"]),
                                     Nombre = reader["Nombre"].ToString(),
                                     Apellido = reader["Apellido"].ToString(),
                                     Email = reader["Email"].ToString()
@@ -332,9 +332,9 @@ namespace PetShopApi.DAL
                     return (new SalidaMod { Codigo = 0, Mensaje = "Error de conexión." }, new Usuario());
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
-                return (new SalidaMod { Codigo = -1, Mensaje = "Ocurrió un error al restablecer la contraseña." }, new Usuario());
+                return (new SalidaMod { Codigo = -1, Mensaje = ex.Message }, new Usuario());
             }
         }
         public async Task<bool> ValidarTokenEnBD(string token)
