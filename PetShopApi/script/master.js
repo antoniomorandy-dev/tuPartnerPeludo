@@ -9,3 +9,11 @@ function ProcesarRespuesta(data) {
         console.warn("La respuesta no contiene mensajes:", data);
     }
 }
+
+
+function EnviarMensaje(codigo, mensaje) {
+    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": 'toast-bottom-right' };
+    if (codigo <= -1) toastr.error(mensaje);
+    else if (codigo === 0) toastr.info(mensaje);
+    else toastr.success(mensaje);
+}

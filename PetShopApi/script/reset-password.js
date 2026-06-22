@@ -75,7 +75,6 @@ if (window.location.pathname.includes('reset-password.html')) {
                     btn.innerText = "Guardar Cambios";
                 }
             } catch (error) {
-                console.error("Error:", error);
                 EnviarMensaje(-1, "No se pudo conectar con el servidor.");
                 btn.disabled = false;
                 btn.innerText = "Guardar Cambios";

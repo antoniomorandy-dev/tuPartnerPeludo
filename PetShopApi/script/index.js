@@ -184,13 +184,6 @@ function cerrarSesion() {
     window.location.href = "index.html";
 }
 
-function EnviarMensaje(codigo, mensaje) {
-    toastr.options = { "closeButton": true, "progressBar": true, "positionClass": 'toast-bottom-right' };
-    if (codigo <= -1) toastr.error(mensaje);
-    else if (codigo === 0) toastr.info(mensaje);
-    else toastr.success(mensaje);
-}
-
 window.handleCredentialResponse = function(response) {
     const userData = decodeJwtResponse(response.credential);
 
