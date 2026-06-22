@@ -1,6 +1,11 @@
 const urlParams = new URLSearchParams(window.location.search);
 const tokenActual = urlParams.get('token');
 
+if (typeof urlParams === 'undefined') {
+    const urlParams = new URLSearchParams(window.location.search);
+    const tokenActual = urlParams.get('token');
+}
+// Solo ejecutamos lógica si estamos en la página correcta
 if (window.location.pathname.includes('reset-password.html')) {
     
     const pass1 = document.getElementById('pass1');
