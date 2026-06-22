@@ -264,10 +264,6 @@ public class UsuariosController : ControllerBase
     [AllowAnonymous]
     public IActionResult ValidarToken(string token)
     {
-        var salida = _usuarioDAL.ValidarToken(token); // Tu método que llama al nuevo SP
-        if (salida.Codigo == 0)
-            return BadRequest(new { mensaje = "Token inválido o expirado." });
-
-        return Ok(new { mensaje = "Token válido." });
+        return Ok(new { salida = _usuarioDAL.ValidarToken(token) });
     }
 }
