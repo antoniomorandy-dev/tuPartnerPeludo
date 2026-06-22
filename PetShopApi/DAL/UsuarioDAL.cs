@@ -15,7 +15,7 @@ namespace PetShopApi.DAL
         {
             _conexionFll = conexionFll;
         }
-        
+
         public async Task<SalidaMod> RegistrarUsuario(Usuario user, string tokenEmail, string codigoWhatsApp)
         {
             using (var conexion = _conexionFll.ObtenerConexion())
@@ -26,7 +26,7 @@ namespace PetShopApi.DAL
                     cmd.CommandType = CommandType.StoredProcedure;
 
                     cmd.Parameters.AddWithValue("@p_Nombre", user.Nombre);
-                    cmd.Parameters.AddWithValue("@p_Apellido", user.Apellido?? "Sin apellido");
+                    cmd.Parameters.AddWithValue("@p_Apellido", user.Apellido ?? "Sin apellido");
                     cmd.Parameters.AddWithValue("@p_Email", user.Email);
                     cmd.Parameters.AddWithValue("@p_Password", BCrypt.Net.BCrypt.HashPassword(user.Password));
                     cmd.Parameters.AddWithValue("@p_Telefono", user.Telefono);
@@ -295,30 +295,46 @@ namespace PetShopApi.DAL
                 return (salida);
             }
         }
-        public async Task<bool> RestablecerPasswordFinal(string token, string nuevoPasswordHash)
+        public (SalidaMod, Usuario) RestablecerPasswordFinal(string token, string nuevaPassword)
         {
-            using (var conexion = _conexionFll.ObtenerConexion())
+            try
             {
-                await conexion.OpenAsync();
-
-                string sql = @"UPDATE Usuarios 
-                       SET PasswordHash = @Pass, 
-                           TokenRecuperacion = NULL, 
-                           FechaExpiracionToken = NULL,
-                           FechaBloqueo = NULL,
-                           IntentosFallidos = 0
-                       WHERE TokenRecuperacion = @Token 
-                       AND FechaExpiracionToken > @Ahora";
-
-                using (var cmd = new MySqlCommand(sql, conexion))
+                using (var db = _conexionFll.ObtenerConexion())
                 {
-                    cmd.Parameters.AddWithValue("@Pass", nuevoPasswordHash);
-                    cmd.Parameters.AddWithValue("@Token", token);
-                    cmd.Parameters.AddWithValue("@Ahora", DateTime.Now);
+                    db.Open();
+                    using (var cmd = new MySqlCommand("sp_ValidarYRestablecerPassword", db))
+                    {
+                        cmd.CommandType = CommandType.StoredProcedure;
+                        cmd.Parameters.AddWithValue("@Token", token);
+                        cmd.Parameters.AddWithValue("@NuevaPassword", nuevaPassword);
 
-                    int filasAfectadas = await cmd.ExecuteNonQueryAsync();
-                    return filasAfectadas > 0;
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                var salida = new SalidaMod
+                                {
+                                    Codigo = reader["Codigo"] != DBNull.Value ? Convert.ToInt32(reader["Codigo"]) : 0,
+                                    Mensaje = reader["Mensaje"]?.ToString(),
+
+                                };
+                                var Usuario = new Usuario
+                                {
+                                    UsuarioID = Convert.ToInt32(reader["IdUsuario"]),
+                                    Nombre = reader["Nombre"].ToString(),
+                                    Apellido = reader["Apellido"].ToString(),
+                                    Email = reader["Email"].ToString()
+                                };
+                                return (salida, Usuario);
+                            }
+                        }
+                    }
+                    return (new SalidaMod { Codigo = 0, Mensaje = "Error de conexión." }, new Usuario());
                 }
+            }
+            catch (Exception)
+            {
+                return (new SalidaMod { Codigo = -1, Mensaje = "Ocurrió un error al restablecer la contraseña." }, new Usuario());
             }
         }
         public async Task<bool> ValidarTokenEnBD(string token)

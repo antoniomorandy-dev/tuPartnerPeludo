@@ -32,7 +32,7 @@ public class UsuariosController : ControllerBase
             if (string.IsNullOrWhiteSpace(user.Email)) return BadRequest(new { codigo = 0, mensaje = "Email obligatorio" });
             if (string.IsNullOrWhiteSpace(user.Telefono)) return BadRequest(new { codigo = 0, mensaje = "Teléfono obligatorio" });
 
-                string codigoWS = new Random().Next(100000, 999999).ToString();
+            string codigoWS = new Random().Next(100000, 999999).ToString();
             string tokenEmail = Guid.NewGuid().ToString();
             SalidaMod salida = new SalidaMod();
 
@@ -48,7 +48,7 @@ public class UsuariosController : ControllerBase
             {
                 //return Ok(new { regCodigo, regMensaje });
                 salida = await _emailService.EnviarCorreoValidacion(user.Email, user.Nombre ?? "Usuario", tokenEmail);
-                if (salida.Codigo == 1) 
+                if (salida.Codigo == 1)
                 {
                     Console.WriteLine("Envio Correo: " + salida.Mensaje);
                     return Ok(salida);
@@ -62,7 +62,7 @@ public class UsuariosController : ControllerBase
                 //{
                 //    return Ok(new { wsCodigo, wsMensaje });
                 //}
-                else 
+                else
                 {
                     Console.WriteLine("Elimino registro: " + salida.Mensaje);
                     await _usuarioDAL.EliminaRegistroUsuario(user);
@@ -91,7 +91,7 @@ public class UsuariosController : ControllerBase
         try
         {
             bool confirmado = await _usuarioDAL.ConfirmarEmail(token);
-        if (confirmado)
+            if (confirmado)
             {
                 string htmlResponse = $@"
                 <html>
@@ -168,7 +168,6 @@ public class UsuariosController : ControllerBase
     [AllowAnonymous]
     public async Task<IActionResult> SolicitarRecuperacion([FromBody] RecuperarRequest request)
     {
-        // 1. Validar entrada según el método
         if (string.IsNullOrWhiteSpace(request.Metodo))
             return BadRequest(new { mensaje = "El método de recuperación es requerido." });
 
@@ -185,7 +184,7 @@ public class UsuariosController : ControllerBase
                 return Ok(new { salida });
             }
         }
-            
+
         if (request.Metodo == "EMAIL")
         {
             (usuario, salida) = await _usuarioDAL.ObtenerPorEmail(request.Email ?? "", salida);
@@ -228,14 +227,14 @@ public class UsuariosController : ControllerBase
                 }
                 else
                 {
-                    return Ok( salida );
+                    return Ok(salida);
                 }
             }
 
             return Ok(new { codigo = 1, mensaje = "Enlace enviado con éxito." });
         }
 
-        return Ok( salida );
+        return Ok(salida);
     }
     [HttpPost("restablecer-final")]
     [AllowAnonymous]
@@ -248,10 +247,12 @@ public class UsuariosController : ControllerBase
 
         string passHash = BCrypt.Net.BCrypt.HashPassword(request.NuevaPassword);
 
-        bool exito = await _usuarioDAL.RestablecerPasswordFinal(request.Token, passHash);
+        (SalidaMod salida, Usuario usuario) = _usuarioDAL.RestablecerPasswordFinal(request.Token, passHash);
 
-        if (exito)
+        if (salida.Codigo == 1)
         {
+            if (!string.IsNullOrEmpty(usuario.Email) && !string.IsNullOrEmpty(usuario.Nombre) && !string.IsNullOrEmpty(usuario.Apellido))
+                await _emailService.EnviarCorreoPasswordActualizada(usuario.Email, usuario.Nombre, usuario.Apellido, request.Token);
             return Ok(new { codigo = 1, mensaje = "¡Contraseña actualizada con éxito!" });
         }
         else

@@ -42,11 +42,12 @@ namespace PetShopApi.Services
                 message.To.Add(new MailboxAddress(nombre, emailDestino));
                 message.Subject = "Activa tu cuenta de Partner Peludo";
 
-                message.Body = new TextPart("html") {
+                message.Body = new TextPart("html")
+                {
                     Text = $"<p>Hola {nombre}, para completar tu registro haz clic aquí: <a href='{_baseUrl}/api/Usuarios/confirmar?token={token}'>Validar cuenta</a></p>"
                 };
 
-                using (var client = new MailKit.Net.Smtp.SmtpClient()) 
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
                 {
                     await client.ConnectAsync(_smtpHost, _smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
                     await client.AuthenticateAsync(_smtpUser, _smtpPass);
@@ -90,6 +91,36 @@ namespace PetShopApi.Services
             catch (Exception ex)
             {
                 return new SalidaMod { Codigo = -1, Mensaje = "Error al enviar correo: " + ex.Message };
+            }
+        }
+        public async Task<SalidaMod> EnviarCorreoPasswordActualizada(string emailDestino, string nombre, string apellido, string token)
+        {
+            if (string.IsNullOrWhiteSpace(_smtpHost) || string.IsNullOrWhiteSpace(_smtpUser) || string.IsNullOrWhiteSpace(_smtpPass) || string.IsNullOrWhiteSpace(_emailFrom))
+            {
+                throw new InvalidOperationException("SMTP_HOST, SMTP_USER, SMTP_PASS o EMAIL_FROM no están configurados en las variables de entorno.");
+            }
+            try
+            {
+                var message = new MimeMessage();
+                message.From.Add(new MailboxAddress("Tu Partner Peludo", _emailFrom));
+                message.To.Add(new MailboxAddress($"{nombre} {apellido}", emailDestino));
+                message.Subject = "Se Actualizo su contraseña Tu Partner Peludo";
+                message.Body = new TextPart("html")
+                {
+                    Text = $"<p>Hola {nombre} {apellido}, tu contraseña ha sido actualizada correctamente.</p>"
+                };
+                using (var client = new MailKit.Net.Smtp.SmtpClient())
+                {
+                    await client.ConnectAsync(_smtpHost, _smtpPort, MailKit.Security.SecureSocketOptions.StartTls);
+                    await client.AuthenticateAsync(_smtpUser, _smtpPass);
+                    await client.SendAsync(message);
+                    await client.DisconnectAsync(true);
+                }
+                return new SalidaMod { Codigo = 1, Mensaje = "Correo de restablecimiento enviado correctamente" };
+            }
+            catch (Exception ex)
+            {
+                return new SalidaMod { Codigo = -1, Mensaje = "Error SMTP: " + ex.Message };
             }
         }
     }
