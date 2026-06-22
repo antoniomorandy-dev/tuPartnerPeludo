@@ -92,6 +92,8 @@ async function registrarUsuario(datosUsuario) {
     }
 }
 
+// Función para mostrar/ocultar campos según la selección
+function alternarCamposRecuperacion() {
     const metodo = document.getElementById("metodo-recuperacion").value;
     const campoWs = document.getElementById("campo-whatsapp");
     const campoEmail = document.getElementById("campo-email");
@@ -105,10 +107,12 @@ async function registrarUsuario(datosUsuario) {
     }
 }
 
+// Nueva versión de la función de solicitud
 async function solicitarRecuperacionAdaptada() {
     const metodo = document.getElementById("metodo-recuperacion").value;
     const btn = document.getElementById("btnEnviarRecuperar");
     
+    // Obtener valores según el método
     const payload = {
         Metodo: metodo,
         Telefono: metodo === "WHATSAPP" ? document.getElementById("rec-telefono").value.replace(/\D/g, "") : null,
@@ -270,8 +274,11 @@ window.onload = function() {
 };
 
 window.onload = function() {
+    // Si estamos en la página de inicio (index.html) y ya hay sesión, podemos ir al main directamente
+    // Pero si estamos en main.html, no fuerces una validación de token si ya quitaste la autorización
     const session = localStorage.getItem('user_session');
     
+    // Solo mostramos perfil si existe sesión real
     if (session && window.location.pathname.includes("index.html")) {
         mostrarSeccionPerfil();
     }
@@ -289,6 +296,7 @@ function decodeJwtResponse(token) {
 window.onload = function () {
   google.accounts.id.initialize({
     client_id: "85108018661-r3dis4gm7h25kg9or2fnnpckhme87raj.apps.googleusercontent.com",
-    callback: window.handleCredentialResponse
+    callback: window.handleCredentialResponse // Pasamos la función explícitamente
   });
+  // No necesitas los atributos data- en el HTML si haces esto
 };
