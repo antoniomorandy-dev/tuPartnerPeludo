@@ -111,7 +111,24 @@ function alternarCamposRecuperacion() {
 async function solicitarRecuperacionAdaptada() {
     const metodo = document.getElementById("metodo-recuperacion").value;
     const btn = document.getElementById("btnEnviarRecuperar");
-    
+    const campoTelefono = document.getElementById('rec-telefono');
+    const campoEmail = document.getElementById('rec-email');
+
+    let esValido = false;
+    let valorAEnviar = "";
+    if (metodo === "WHATSAPP") {
+        // Validar que tenga al menos 8-12 dígitos (ajusta según tu país)
+        const telefonoRegex = /^\d{8,12}$/;
+        esValido = telefonoRegex.test(campoTelefono.value);
+        valorAEnviar = campoTelefono.value;
+        if (!esValido) EnviarMensaje(-1, "Por favor, ingresa un número de teléfono válido.");
+    } else {
+        // Validar formato de email
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        esValido = emailRegex.test(campoEmail.value);
+        valorAEnviar = campoEmail.value;
+        if (!esValido) EnviarMensaje(-1, "Por favor, ingresa un correo electrónico válido.");
+    }
     // Obtener valores según el método
     const payload = {
         Metodo: metodo,
