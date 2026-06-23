@@ -27,6 +27,8 @@ builder.Services.AddSwaggerGen(c =>
 builder.Services.AddScoped<ConexionFll>();
 builder.Services.AddScoped<UsuarioDAL>();
 builder.Services.AddScoped<EmailService>();
+builder.Services.AddScoped<MetodosRecuperacionDal>();
+// Asegúrate de que esta línea esté en tu Program.cs
 builder.Services.Configure<WhatsappSettings>(builder.Configuration.GetSection("WhatsappSettings"));
 builder.Services.AddScoped<IWhatsappService, WhatsappService>();
 

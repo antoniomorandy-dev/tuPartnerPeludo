@@ -10,13 +10,15 @@ using Microsoft.AspNetCore.Authorization;
 public class UsuariosController : ControllerBase
 {
     private readonly UsuarioDAL _usuarioDAL;
+    private readonly MetodosRecuperacionDal _metodosRecuperacionDal;
     private readonly EmailService _emailService;
     private readonly IWhatsappService _whatsappService;
     private readonly IConfiguration _configuration;
 
-    public UsuariosController(UsuarioDAL usuarioDAL, EmailService emailService, IWhatsappService whatsappService, IConfiguration configuration)
+    public UsuariosController(UsuarioDAL usuarioDAL, MetodosRecuperacionDal metodosRecuperacionDal, EmailService emailService, IWhatsappService whatsappService, IConfiguration configuration)
     {
         _usuarioDAL = usuarioDAL;
+        _metodosRecuperacionDal = metodosRecuperacionDal;
         _emailService = emailService;
         _whatsappService = whatsappService;
         _configuration = configuration;
@@ -265,5 +267,27 @@ public class UsuariosController : ControllerBase
     public IActionResult ValidarToken(string token)
     {
         return Ok(new { salida = _usuarioDAL.ValidarToken(token) });
+    }
+    [HttpGet("metodos-recuperacion")]
+    [AllowAnonymous]
+    public async Task<IActionResult> ObtenerMetodos()
+    {
+        try
+        {
+            List<MetodosRecuperacionMod> metodos = await Task.Run(() => _metodosRecuperacionDal.MetodosRecuperacion());
+            var respuesta = new
+            {
+                salida = new
+                {
+                    codigo = 1,
+                    metodos = metodos
+                }
+            };
+            return Ok(respuesta);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new { codigo = -1, mensaje = "Error al obtener métodos de recuperación: " + ex.Message });
+        }
     }
 }
