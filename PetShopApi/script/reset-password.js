@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     };
 
     if (!tokenActual) {
-        EnviarMensaje(-1, "Token no encontrado. Por favor, solicita uno nuevo.");
+        EnviarMensaje(-1, "Data no encontrada. Por favor, solicita uno nuevo.");
         return;
     }
 
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", async () => {
             return;
         }
         
-        EnviarMensaje(1, "Token validado correctamente.");
+        //EnviarMensaje(1, "Token validado correctamente.");
     } catch (e) {
         manejarTokenInvalido("Error de conexión al validar el token.");
         return;

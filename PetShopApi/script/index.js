@@ -74,14 +74,13 @@ async function registrarUsuario(datosUsuario) {
             body: JSON.stringify(datosUsuario)
         });
         const data = await response.json();
-        const codigoRespuesta = data.regCodigo;
-        const mensajeRespuesta = data.regMensaje;
+        const dataRes = data.salida;
 
-        if (codigoRespuesta === 1) {
-            EnviarMensaje(codigoRespuesta, mensajeRespuesta);
+        if (dataRes.codigo === 1) {
+            EnviarMensaje(dataRes.codigo, dataRes.mensaje);
             mostrarVerificacion();
         } else {
-            EnviarMensaje(codigoRespuesta || 0, mensajeRespuesta || "Error al registrar.");
+            EnviarMensaje(dataRes.codigo || 0, dataRes.mensaje || "Error al registrar.");
         }
     } catch (error) {
         console.error("Error completo:", error);
