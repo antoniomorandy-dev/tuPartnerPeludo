@@ -80,13 +80,12 @@ async function registrarUsuario(datosUsuario) {
             body: JSON.stringify(datosUsuario)
         });
         const data = await response.json();
-        const dataRes = data.salida;
-        console.log(data);
-        if (dataRes.codigo === 1) {
-            EnviarMensaje(dataRes.codigo, dataRes.mensaje);
+        console.log("Respuesta API:", data);
+        if (data.codigo === 1) {
+            EnviarMensaje(data.codigo, data.mensaje);
             mostrarLogin();
         } else {
-            EnviarMensaje(dataRes.codigo || 0, dataRes.mensaje || "Error al registrar.");
+            EnviarMensaje(data.codigo || 0, data.mensaje || "Error al registrar.");
         }
     } catch (error) {
         console.error("Error completo:", error);
