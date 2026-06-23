@@ -348,3 +348,11 @@ window.onload = function () {
   });
   // No necesitas los atributos data- en el HTML si haces esto
 };
+
+// Asegúrate de ejecutar esto cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    // Si estás en la página de recuperación, carga los métodos:
+    if (document.getElementById('metodo-recuperacion')) {
+        cargarMetodosRecuperacion();
+    }
+});
