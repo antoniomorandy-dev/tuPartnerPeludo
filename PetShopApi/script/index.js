@@ -99,19 +99,55 @@ async function registrarUsuario(datosUsuario) {
     }
 }
 
+async function cargarMetodosRecuperacion() {
+    try {
+        const res = await fetch(`${CONFIG.API_BASE_URL}/usuarios/metodos-recuperacion`);
+        const json = await res.json();
+        
+        // Accedemos a la lista que devuelve tu API
+        const metodos = json.salida.metodos; 
+        const select = document.getElementById('metodo-recuperacion');
+        
+        select.innerHTML = ""; // Limpiamos opciones anteriores
+
+        metodos.forEach(metodo => {
+            const option = document.createElement('option');
+            option.value = metodo.id;
+            option.textContent = metodo.etiqueta;
+            // Guardamos el placeholder para usarlo después
+            option.dataset.placeholder = metodo.placeholder; 
+            select.appendChild(option);
+        });
+
+        // Llamamos a la lógica para ajustar los inputs según el primer método
+        alternarCamposRecuperacion();
+    } catch (e) {
+        console.error("Error al cargar métodos:", e);
+    }
+}
+
 // Función para mostrar/ocultar campos según la selección
 function alternarCamposRecuperacion() {
-    const metodo = document.getElementById("metodo-recuperacion").value;
-    const campoWs = document.getElementById("campo-whatsapp");
-    const campoEmail = document.getElementById("campo-email");
-
-    if (metodo === "WHATSAPP") {
-        campoWs.classList.remove("d-none");
-        campoEmail.classList.add("d-none");
-    } else {
-        campoWs.classList.add("d-none");
-        campoEmail.classList.remove("d-none");
+    const select = document.getElementById("metodo-recuperacion");
+    const metodo = select.value;
+    
+    // Obtenemos todos los contenedores de campos posibles
+    // Tip: Ponles una clase común como 'campo-recuperacion' en tu HTML
+    const todosLosCampos = document.querySelectorAll(".campo-recuperacion");
+    
+    // Ocultamos todos primero
+    todosLosCampos.forEach(c => c.classList.add("d-none"));
+    
+    // Mostramos solo el que coincide con el ID del método
+    const campoSeleccionado = document.getElementById("campo-" + metodo.toLowerCase());
+    if (campoSeleccionado) {
+        campoSeleccionado.classList.remove("d-none");
     }
+
+    // Opcional: Actualizar el placeholder del input activo dinámicamente
+    const placeholder = select.options[select.selectedIndex].dataset.placeholder;
+    const inputActivo = campoSeleccionado.querySelector("input");
+    if(inputActivo) inputActivo.placeholder = placeholder;
 }
 
 // Nueva versión de la función de solicitud

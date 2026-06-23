@@ -124,23 +124,21 @@
                 <form id="formRecuperar" onsubmit="event.preventDefault(); solicitarRecuperacionAdaptada()">
                     <div class="mb-3">
                         <select id="metodo-recuperacion" class="form-select" onchange="alternarCamposRecuperacion()">
-                            <option value="WHATSAPP">Por WhatsApp</option>
-                            <option value="EMAIL">Por Correo Electrónico</option>
-                        </select>
+                            </select>
                     </div>
 
-                    <div id="campo-whatsapp" class="mb-3 text-start">
+                    <div id="campo-whatsapp" class="mb-3 text-start campo-recuperacion d-none">
                         <label class="form-label small fw-bold">WhatsApp</label>
                         <input type="text" id="rec-telefono" class="form-control" placeholder="Ej: 56912345678">
                     </div>
 
-                    <div id="campo-email" class="mb-3 text-start d-none">
+                    <div id="campo-email" class="mb-3 text-start campo-recuperacion d-none">
                         <label class="form-label small fw-bold">Correo Electrónico</label>
                         <input type="email" id="rec-email" class="form-control" placeholder="correo@ejemplo.com">
                     </div>
-                    
+
                     <div class="d-grid gap-2">
-                        <button type="submit" id="btnEnviarRecuperar" class="btn btn-dark fw-bold border-0" style="background: #836f14;">ENVIAR ENLACE</button>
+                        <button type="submit" id="btnEnviarRecuperar" class="btn btn-dark fw-bold border-0">ENVIAR ENLACE</button>
                         <button type="button" onclick="mostrarLogin()" class="btn btn-link text-muted btn-sm">Volver al inicio</button>
                     </div>
                 </form>
