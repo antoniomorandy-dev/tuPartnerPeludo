@@ -34,6 +34,16 @@
                 <button onclick="logout()" class="btn btn-sm ms-3"><i class="fas fa-sign-out-alt"></i></button>
             </div>
         </div>
+        <div class="d-flex align-items-center">
+            <a href="#" class="text-dark me-4 position-relative" onclick="abrirCarrito()">
+                <i class="fas fa-shopping-cart fa-lg"></i>
+                <span id="contador-carrito" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+            </a>
+            
+            <span id="user-name" class="me-3 fw-bold small"></span>
+            <img id="user-img" src="" class="rounded-circle user-avatar">
+            <button onclick="logout()" class="btn btn-sm ms-3"><i class="fas fa-sign-out-alt"></i></button>
+        </div>
     </nav>
 
     <div class="container my-5 text-center">
