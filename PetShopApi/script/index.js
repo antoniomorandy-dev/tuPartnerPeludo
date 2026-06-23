@@ -80,12 +80,15 @@ async function registrarUsuario(datosUsuario) {
             body: JSON.stringify(datosUsuario)
         });
         const data = await response.json();
-        console.log("Respuesta API:", data);
-        if (data.codigo === 1) {
-            EnviarMensaje(data.codigo, data.mensaje);
+        const codigo = data.codigo;
+        const mensaje = data.mensaje;
+
+        if (codigo === 1) {
+            EnviarMensaje(codigo, mensaje);
             mostrarLogin();
         } else {
-            EnviarMensaje(data.codigo || 0, data.mensaje || "Error al registrar.");
+            // Si codigo es undefined, usamos 0 como respaldo
+            EnviarMensaje(codigo || 0, mensaje || "Error al registrar.");
         }
     } catch (error) {
         console.error("Error completo:", error);
