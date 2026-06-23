@@ -81,7 +81,7 @@ async function registrarUsuario(datosUsuario) {
         });
         const data = await response.json();
         const dataRes = data.salida;
-        console.log(dataRes);
+        console.log(data);
         if (dataRes.codigo === 1) {
             EnviarMensaje(dataRes.codigo, dataRes.mensaje);
             mostrarLogin();
