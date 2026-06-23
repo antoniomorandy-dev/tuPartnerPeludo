@@ -74,6 +74,38 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
 });
 
+function validarPassword() {
+    const pass1 = document.getElementById('pass1').value;
+    const pass2 = document.getElementById('pass2').value;
+    const btn = document.getElementById('btnGuardar');
+    
+    // Reglas de validación
+    const tieneMayus = /[A-Z]/.test(pass1);
+    const tieneMinus = /[a-z]/.test(pass1);
+    const tieneNumero = /[0-9]/.test(pass1);
+    const tieneLargo = pass1.length >= 8;
+    
+    // Actualizar checks visuales
+    actualizarCheck('check-mayus', tieneMayus);
+    actualizarCheck('check-minus', tieneMinus);
+    actualizarCheck('check-numero', tieneNumero);
+    actualizarCheck('check-largo', tieneLargo);
+    
+    // Validación de coincidencia
+    const coinciden = pass1 === pass2 && pass1 !== "";
+    const checkCoincide = document.getElementById('check-coincide');
+    
+    if (pass2 !== "" && !coinciden) {
+        checkCoincide.classList.remove('d-none');
+    } else {
+        checkCoincide.classList.add('d-none');
+    }
+    
+    // Habilitar botón solo si todo es correcto
+    const esValido = tieneMayus && tieneMinus && tieneNumero && tieneLargo && coinciden;
+    btn.disabled = !esValido;
+}
+
 function actualizarCheck(id, cumple) {
     const el = document.getElementById(id);
     if (!el) return;
