@@ -9,14 +9,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.css">
     <link rel="icon" type="image/png" href="images/logo.png">
+    <link  rel="stylesheet" href="PetShopApi/CSS/index.css">
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/latest/toastr.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <link  rel="stylesheet" href="PetShopApi/CSS/index.css">
     <script src="PetShopApi/script/master.js" defer></script>
-
-    
+    <script src="PetShopApi/script/carrito.js" defer></script>
 </head>
 <body class="bg-light">
 
@@ -33,6 +32,16 @@
                 <img id="user-img" src="" class="rounded-circle user-avatar">
                 <button onclick="logout()" class="btn btn-sm ms-3"><i class="fas fa-sign-out-alt"></i></button>
             </div>
+        </div>
+        <div class="d-flex align-items-center">
+            <a href="#" class="text-dark me-4 position-relative" onclick="abrirCarrito()">
+                <i class="fas fa-shopping-cart fa-lg"></i>
+                <span id="contador-carrito" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">0</span>
+            </a>
+            
+            <span id="user-name" class="me-3 fw-bold small"></span>
+            <img id="user-img" src="" class="rounded-circle user-avatar">
+            <button onclick="logout()" class="btn btn-sm ms-3"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </nav>
 

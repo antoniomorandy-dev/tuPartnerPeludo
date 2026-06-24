@@ -103,54 +103,44 @@ async function cargarMetodosRecuperacion() {
     try {
         const res = await fetch(`${CONFIG.API_BASE_URL}/usuarios/metodos-recuperacion`);
         const json = await res.json();
-        
-        // Accedemos a la lista que devuelve tu API
+        console.log(json);
         const metodos = json.salida.metodos; 
         const select = document.getElementById('metodo-recuperacion');
         
-        select.innerHTML = ""; // Limpiamos opciones anteriores
+        select.innerHTML = "";
 
         metodos.forEach(metodo => {
             const option = document.createElement('option');
-            option.value = metodo.id;
+            option.value = metodo.metodo;
             option.textContent = metodo.etiqueta;
-            // Guardamos el placeholder para usarlo después
             option.dataset.placeholder = metodo.placeholder; 
             select.appendChild(option);
         });
 
-        // Llamamos a la lógica para ajustar los inputs según el primer método
         alternarCamposRecuperacion();
     } catch (e) {
         console.error("Error al cargar métodos:", e);
     }
 }
 
-// Función para mostrar/ocultar campos según la selección
 function alternarCamposRecuperacion() {
     const select = document.getElementById("metodo-recuperacion");
     const metodo = select.value;
     
-    // Obtenemos todos los contenedores de campos posibles
-    // Tip: Ponles una clase común como 'campo-recuperacion' en tu HTML
     const todosLosCampos = document.querySelectorAll(".campo-recuperacion");
     
-    // Ocultamos todos primero
     todosLosCampos.forEach(c => c.classList.add("d-none"));
     
-    // Mostramos solo el que coincide con el ID del método
     const campoSeleccionado = document.getElementById("campo-" + metodo.toLowerCase());
     if (campoSeleccionado) {
         campoSeleccionado.classList.remove("d-none");
     }
 
-    // Opcional: Actualizar el placeholder del input activo dinámicamente
     const placeholder = select.options[select.selectedIndex].dataset.placeholder;
     const inputActivo = campoSeleccionado.querySelector("input");
     if(inputActivo) inputActivo.placeholder = placeholder;
 }
 
-// Nueva versión de la función de solicitud
 async function solicitarRecuperacionAdaptada() {
     const metodo = document.getElementById("metodo-recuperacion").value;
     const btn = document.getElementById("btnEnviarRecuperar");
@@ -160,19 +150,16 @@ async function solicitarRecuperacionAdaptada() {
     let esValido = false;
     let valorAEnviar = "";
     if (metodo === "WHATSAPP") {
-        // Validar que tenga al menos 8-12 dígitos (ajusta según tu país)
         const telefonoRegex = /^\d{8,12}$/;
         esValido = telefonoRegex.test(campoTelefono.value);
         valorAEnviar = campoTelefono.value;
         if (!esValido) EnviarMensaje(-1, "Por favor, ingresa un número de teléfono válido.");
     } else {
-        // Validar formato de email
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         esValido = emailRegex.test(campoEmail.value);
         valorAEnviar = campoEmail.value;
         if (!esValido) EnviarMensaje(-1, "Por favor, ingresa un correo electrónico válido.");
     }
-    // Obtener valores según el método
     const payload = {
         Metodo: metodo,
         Telefono: metodo === "WHATSAPP" ? document.getElementById("rec-telefono").value.replace(/\D/g, "") : null,
@@ -361,3 +348,11 @@ window.onload = function () {
   });
   // No necesitas los atributos data- en el HTML si haces esto
 };
+
+// Asegúrate de ejecutar esto cuando el DOM esté listo
+document.addEventListener('DOMContentLoaded', () => {
+    // Si estás en la página de recuperación, carga los métodos:
+    if (document.getElementById('metodo-recuperacion')) {
+        cargarMetodosRecuperacion();
+    }
+});
