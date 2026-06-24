@@ -45,39 +45,24 @@
             <button onclick="logout()" class="btn btn-sm ms-3"><i class="fas fa-sign-out-alt"></i></button>
         </div>
     </nav>
-    <div class="row mt-5" id="contenedor-productos">
-    </div>
-    <div class="container my-5 text-center">
-        <h1 class="display-5 fw-bold">Bienvenido a Tu Partner Peludo</h1>
-        
-        <div class="row mt-5">
-            <div class="col-md-4">
-                <a href="#" class="text-decoration-none text-dark">
-                    <div class="card p-4 border-2 border-dark shadow-sm">
-                        <i class="fas fa-bone fa-3x"></i>
-                        <h5>Placas Grabadas</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="text-decoration-none text-dark">
-                    <div class="card p-4 border-2 border-dark shadow-sm">
-                        <i class="fas fa-dog fa-3x"></i>
-                        <h5>Accesorios</h5>
-                    </div>
-                </a>
-            </div>
-            <div class="col-md-4">
-                <a href="#" class="text-decoration-none text-dark">
-                    <div class="card p-4 border-2 border-dark shadow-sm">
-                        <i class="fas fa-paw fa-3x"></i>
-                        <h5>Collar Personalizado</h5>
-                    </div>
-                </a>
-            </div>
-        </div>
+    <div class="container-fluid">
+    <div class="row">
+        <aside class="col-md-2 bg-white p-3 border-end" style="min-height: 80vh;">
+            <h5 class="fw-bold mb-4">Categorías</h5>
+            <ul class="nav flex-column">
+                <li class="nav-item mb-2"><a href="#" class="nav-link text-dark active" onclick="filtrarProductos('todos')">Todos</a></li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link text-dark" onclick="filtrarProductos('placas')">Placas</a></li>
+                <li class="nav-item mb-2"><a href="#" class="nav-link text-dark" onclick="filtrarProductos('accesorios')">Accesorios</a></li>
+            </ul>
+        </aside>
 
+        <main class="col-md-10 p-4">
+            <h2 class="mb-4">Productos Destacados</h2>
+            <div class="row" id="contenedor-productos">
+                </div>
+        </main>
     </div>
+</div>
 
 
     <script>
