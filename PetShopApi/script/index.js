@@ -241,8 +241,6 @@ function mostrarSeccionPerfil() {
     }
 }
 
-
-
 async function confirmarCodigo() {
     const codigo = document.getElementById('codigo-verificacion').value;
     const email = document.getElementById('reg-email').value;
@@ -282,20 +280,22 @@ async function confirmarCodigo() {
 }
 
 window.onload = function() {
-    if (localStorage.getItem('user_session')) {
-        mostrarSeccionPerfil();
-    }
-};
-
-window.onload = function() {
-    // Si estamos en la página de inicio (index.html) y ya hay sesión, podemos ir al main directamente
-    // Pero si estamos en main.html, no fuerces una validación de token si ya quitaste la autorización
+    // 1. Lógica de sesión (La que faltaba)
     const session = localStorage.getItem('user_session');
-    
-    // Solo mostramos perfil si existe sesión real
     if (session && window.location.pathname.includes("index.html")) {
         mostrarSeccionPerfil();
     }
+
+    // 2. Lógica de Google (La que estaba pisando a las demás)
+    if (typeof google !== 'undefined') {
+        google.accounts.id.initialize({
+            client_id: "85108018661-r3dis4gm7h25kg9or2fnnpckhme87raj.apps.googleusercontent.com",
+            callback: window.handleCredentialResponse
+        });
+    }
+
+    // 3. Cualquier otra lógica que necesites al cargar
+    console.log("Sistema inicializado correctamente");
 };
 
 function decodeJwtResponse(token) {
@@ -306,14 +306,6 @@ function decodeJwtResponse(token) {
     }).join(''));
     return JSON.parse(jsonPayload);
 }
-
-window.onload = function () {
-  google.accounts.id.initialize({
-    client_id: "85108018661-r3dis4gm7h25kg9or2fnnpckhme87raj.apps.googleusercontent.com",
-    callback: window.handleCredentialResponse // Pasamos la función explícitamente
-  });
-  // No necesitas los atributos data- en el HTML si haces esto
-};
 
 // Asegúrate de ejecutar esto cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
