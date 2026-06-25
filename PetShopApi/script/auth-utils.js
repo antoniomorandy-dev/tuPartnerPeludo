@@ -25,3 +25,24 @@ function logout() {
     localStorage.removeItem('session_token');
     window.location.replace("index.html");
 }
+
+// En tu archivo de seguridad (ej. auth-utils.js o al inicio de admin-productos.js)
+function protegerRutaAdmin() {
+    const sessionData = localStorage.getItem('user_session');
+    
+    if (!sessionData) {
+        window.location.replace("index.html"); // No ha iniciado sesión
+        return;
+    }
+
+    const session = JSON.parse(sessionData);
+    
+    // Aquí está el candado:
+    if (session.rol !== 'admin') {
+        EnviarMensaje(-1, "Acceso denegado. Redirigiendo a tu panel.");
+        window.location.replace("main.html"); // Obligamos a volver al main
+    }
+}
+
+// Llama a esto inmediatamente al cargar admin-productos.html
+protegerRutaAdmin();

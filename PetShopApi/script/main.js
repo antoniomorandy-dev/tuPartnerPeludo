@@ -1,3 +1,11 @@
+window.onload = function() {
+    const session = JSON.parse(localStorage.getItem('user_session'));
+    
+    if (session && session.rol === 'admin') {
+        document.getElementById('btn-admin').classList.remove('d-none');
+    }
+};
+
 async function cargarProductos() {
     try {
         // Ajusta la URL a tu base de datos de producción o local
