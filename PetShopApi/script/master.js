@@ -18,6 +18,9 @@ function EnviarMensaje(codigo, mensaje) {
 }
 
 async function realizarLogin(email, password) {
+    const btnIniciar = document.querySelector("#formLogin button[type='submit']");
+    btnIniciar.disabled = true;
+    btnIniciar.innerText = "Iniciando Sesion...";
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
             method: 'POST',
@@ -35,6 +38,7 @@ async function realizarLogin(email, password) {
             localStorage.setItem('user_session', JSON.stringify(userSession));
             if (data.rol === 'admin') {
                 window.location.href = "admin-productos.html";
+                btnIniciar.innerText = "ACCESO ADMINISTRADOR";
             } else {
                 window.location.href = "main.html";
             }
@@ -43,5 +47,10 @@ async function realizarLogin(email, password) {
         }
     } catch (error) {
         EnviarMensaje(-1, "Error de conexión con el servidor");
+    }
+    finally
+    {
+        btnIniciar.disabled = false;
+        btnIniciar.innerText = "ENTRAR";
     }
 }
