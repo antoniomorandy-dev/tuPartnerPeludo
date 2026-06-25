@@ -284,7 +284,7 @@ window.onload = function() {
     if (sessionData && window.location.pathname.includes("index.html")) {
         const session = JSON.parse(sessionData);
         window.location.replace(session.rol === 'admin' ? "admin-productos.html" : "main.html");
-        alert("bucle");
+        alert('bucle');
         return;
     }
 
