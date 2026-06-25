@@ -33,7 +33,11 @@ async function realizarLogin(email, password) {
                 rol: data.rol
             };
             localStorage.setItem('user_session', JSON.stringify(userSession));
-            window.location.href = "main.html";
+            if (data.rol === 'admin') {
+                window.location.href = "admin-productos.html";
+            } else {
+                window.location.href = "main.html";
+            }
         } else {
             ProcesarRespuesta(data);
         }
