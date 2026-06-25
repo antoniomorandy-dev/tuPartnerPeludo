@@ -281,12 +281,11 @@ async function confirmarCodigo() {
 window.onload = function() {
     const sessionData = localStorage.getItem('user_session');
 
-    // SOLO si estamos en index.html y YA tenemos sesión:
     if (sessionData && window.location.pathname.includes("index.html")) {
         const session = JSON.parse(sessionData);
-        // Redirigimos según el rol, pero verificamos dónde estamos
         window.location.replace(session.rol === 'admin' ? "admin-productos.html" : "main.html");
-        return; // ¡IMPORTANTE! Detiene el script aquí
+        alert("bucle");
+        return;
     }
 
     // ... inicialización de Google ...
