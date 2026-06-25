@@ -17,13 +17,6 @@ function EnviarMensaje(codigo, mensaje) {
     else toastr.success(mensaje);
 }
 
-const response = await fetch(`${CONFIG.API_BASE_URL}/usuarios/login`, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ email: Email, password: Password })
-        });
-const data = await response.json();
-
 if (data.codigo === 1) {
     const userSession = {
         nombre: data.user, 
