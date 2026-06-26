@@ -38,8 +38,7 @@ function protegerRutaAdmin() {
     const session = JSON.parse(sessionData);
     
     // Aquí está el candado:
-    if (session.rol !== 'admin') {
-        EnviarMensaje(-1, "Acceso denegado. Redirigiendo a tu panel.");
+    if (session.rol === 'cliente') {
         window.location.replace("main.html"); // Obligamos a volver al main
         return;
     }
