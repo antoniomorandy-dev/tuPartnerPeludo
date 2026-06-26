@@ -21,10 +21,9 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
 
 function verificarAdmin() {
     const session = JSON.parse(localStorage.getItem('user_session'));
-    
-    // Ahora 'session.rol' vendrá directamente de tu base de datos
     if (!session || session.rol !== 'admin') {
         toastr.error("Acceso denegado: Área exclusiva para administradores");
-        window.location.href = "main.html"; // Redirigir a lugar seguro
+        window.location.href = "main.html";
     }
 }
+verificarAdmin();
