@@ -41,6 +41,7 @@ function protegerRutaAdmin() {
     if (session.rol !== 'admin') {
         EnviarMensaje(-1, "Acceso denegado. Redirigiendo a tu panel.");
         window.location.replace("main.html"); // Obligamos a volver al main
+        return;
     }
 }
 
