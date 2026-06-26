@@ -278,6 +278,18 @@ async function confirmarCodigo() {
         btnConfirmar.innerText = "Verificar Cuenta";
     }
 }
+window.onload = function() {
+    const sessionData = localStorage.getItem('user_session');
+
+    if (sessionData && window.location.pathname.includes("index.html")) {
+        const session = JSON.parse(sessionData);
+        window.location.replace(session.rol === 'admin' ? "admin-productos.html" : "main.html");
+        alert('bucle');
+        return;
+    }
+
+    // ... inicialización de Google ...
+};
 
 function decodeJwtResponse(token) {
     let base64Url = token.split('.')[1];

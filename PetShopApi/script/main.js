@@ -41,13 +41,3 @@ async function cargarProductos() {
 
 // Ejecutar al cargar la página
 document.addEventListener('DOMContentLoaded', cargarProductos);
-
-function verificarSesionCliente() {
-    const session = localStorage.getItem('user_session');
-    if (!session) {
-        window.location.replace("index.html"); // Solo sacamos a los que NO están logueados
-        alert('bucle');
-        return;
-    }
-}
-verificarSesionCliente();
