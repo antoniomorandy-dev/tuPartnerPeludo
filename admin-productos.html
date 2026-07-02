@@ -68,38 +68,55 @@
         </div>
     </div>
     <div class="container mt-5">
-        <div class="card shadow-sm p-4">
-            <h3 class="mb-4">Administrar Productos</h3>
-            <form id="form-producto">
-                <div class="mb-3">
-                    <label class="form-label">Nombre del Producto</label>
-                    <input type="text" id="nombre" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Descripción</label>
-                    <textarea id="descripcion" class="form-control" rows="3"></textarea>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Precio</label>
-                    <input type="number" id="precio" class="form-control" required>
-                </div>
-                <div class="mb-3">
-                    <label class="form-label">Imagen del Producto</label>
-                    <input type="file" id="imagenProducto" class="form-control" accept="image/*" required>
-                </div>
-                <button type="submit" class="btn btn-dark w-100">Guardar Producto</button>
-            </form>
-            <div class="container mt-4">
-                <table class="table" id="tabla-productos">
-                    <thead>
-                        <tr><th>Nombre</th><th>Precio</th><th>Imagen</th></tr>
-                    </thead>
-                    <tbody>
-                        </tbody>
-                </table>
+    <h2 class="mb-4 text-center">Gestión de Inventario</h2>
+    
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card shadow-sm p-4 mb-5">
+                <h4 class="mb-3">Agregar Nuevo Producto</h4>
+                <form id="form-producto">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Nombre</label>
+                            <input type="text" id="nombre" class="form-control" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Precio</label>
+                            <input type="number" id="precio" class="form-control" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Descripción</label>
+                        <textarea id="descripcion" class="form-control" rows="2"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Imagen del Producto</label>
+                        <input type="file" id="imagenProducto" class="form-control" accept="image/*" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary w-100">Guardar Producto</button>
+                </form>
             </div>
         </div>
     </div>
+
+    <div class="card shadow-sm p-4">
+        <h4 class="mb-3">Productos Existentes</h4>
+        <div class="table-responsive">
+            <table class="table table-hover align-middle" id="tabla-productos">
+                <thead class="table-light">
+                    <tr>
+                        <th>Imagen</th>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="lista-productos">
+                    </tbody>
+            </table>
+        </div>
+    </div>
+</div>
     <script src="PetShopApi/script/master.js" defer></script>
 </body>
 </html>

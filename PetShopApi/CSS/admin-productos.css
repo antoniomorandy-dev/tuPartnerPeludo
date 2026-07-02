@@ -32,3 +32,15 @@ body {
     height: 200px;
     object-fit: cover;
 }
+/* Asegura que las imágenes en la tabla tengan un tamaño constante */
+.img-thumbnail-custom {
+    width: 60px;
+    height: 60px;
+    object-fit: cover; /* Recorta la imagen para que siempre llene el cuadro sin deformarse */
+    border-radius: 8px;
+}
+
+/* Mejora el espacio en la tabla */
+.table td, .table th {
+    vertical-align: middle;
+}
