@@ -115,18 +115,19 @@ async function renderizarTablaProductos() {
     const contenedor = document.getElementById('lista-productos');
     
     try {
-        // Usamos el endpoint GET principal que ahora es consistente
+        // La URL debe coincidir con el endpoint que devuelve el JSON de la captura
         const response = await fetch(`${CONFIG.API_BASE_URL}/Productos`);
         const data = await response.json();
         
-        // Verificamos si data.productos existe y es un array
+        // ¡Aquí está la clave! Accedemos a data.productos
         if (data.productos && Array.isArray(data.productos)) {
             contenedor.innerHTML = ''; 
             
             data.productos.forEach(p => {
+                // p.urlImagen ahora contiene la URL que Cloudinary te devuelve
                 contenedor.innerHTML += `
                     <tr>
-                        <td><img src="${p.urlImagen}" class="img-thumbnail" style="width: 50px;"></td>
+                        <td><img src="${p.urlImagen}" class="img-thumbnail" style="width: 60px; height: 60px; object-fit: cover;"></td>
                         <td>${p.nombre}</td>
                         <td>$${p.precio.toLocaleString()}</td>
                         <td>
@@ -135,6 +136,8 @@ async function renderizarTablaProductos() {
                     </tr>
                 `;
             });
+        } else {
+            console.warn("La API no devolvió una lista en 'productos'", data);
         }
     } catch (error) {
         console.error("Error al cargar la tabla:", error);
