@@ -1,21 +1,27 @@
 document.getElementById('form-producto').addEventListener('submit', async (e) => {
     e.preventDefault();
-    const producto = {
-        nombre: document.getElementById('nombre').value,
-        descripcion: document.getElementById('descripcion').value,
-        precio: parseFloat(document.getElementById('precio').value),
-        urlImagen: document.getElementById('urlImagen').value
-    };
+
+    const formData = new FormData();
+    formData.append("Nombre", document.getElementById('nombre').value);
+    formData.append("Descripcion", document.getElementById('descripcion').value);
+    formData.append("Precio", document.getElementById('precio').value);
+    
+    const fileInput = document.getElementById('imagenProducto');
+    formData.append("file", fileInput.files[0]); 
 
     const response = await fetch(`${CONFIG.API_BASE_URL}/Productos`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(producto)
+        body: formData 
     });
 
-    if(response.ok) {
+    const data = await response.json();
+
+    if(data.codigo === 1) {
         toastr.success("Producto guardado correctamente");
         document.getElementById('form-producto').reset();
+        renderizarTablaProductos(); 
+    } else {
+        toastr.error("Error al guardar: " + (data.mensaje || "Error desconocido"));
     }
 });
 
@@ -54,7 +60,7 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
     formData.append("Descripcion", document.getElementById('descripcion').value);
     const fileInput = document.getElementById('imagenProducto');
     formData.append("file", fileInput.files[0]);
-    
+
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/Productos/guardar`, {
             method: 'POST',
@@ -109,20 +115,20 @@ async function renderizarTablaProductos() {
     const contenedor = document.getElementById('lista-productos');
     
     try {
-        const response = await fetch(`${CONFIG.API_BASE_URL}/Productos/listar`);
+        // Usamos el endpoint GET principal que ahora es consistente
+        const response = await fetch(`${CONFIG.API_BASE_URL}/Productos`);
         const data = await response.json();
-
-        if (data.codigo === 1) {
-            contenedor.innerHTML = '';
+        
+        // Verificamos si data.productos existe y es un array
+        if (data.productos && Array.isArray(data.productos)) {
+            contenedor.innerHTML = ''; 
             
             data.productos.forEach(p => {
-                const urlCompleta = `https://tupartnerpeludo.onrender.com${p.urlImagen}`;
-                
                 contenedor.innerHTML += `
                     <tr>
-                        <td><img src="${urlCompleta}" class="img-thumbnail-custom" alt="Producto"></td>
+                        <td><img src="${p.urlImagen}" class="img-thumbnail" style="width: 50px;"></td>
                         <td>${p.nombre}</td>
-                        <td>$${p.precio}</td>
+                        <td>$${p.precio.toLocaleString()}</td>
                         <td>
                             <button class="btn btn-sm btn-outline-danger">Eliminar</button>
                         </td>
@@ -131,7 +137,7 @@ async function renderizarTablaProductos() {
             });
         }
     } catch (error) {
-        console.error("Error al listar:", error);
+        console.error("Error al cargar la tabla:", error);
     }
 }
 
