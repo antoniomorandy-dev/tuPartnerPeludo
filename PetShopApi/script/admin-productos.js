@@ -50,10 +50,11 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
 
     const formData = new FormData();
     formData.append("Nombre", document.getElementById('nombre').value);
-    formData.append("Descripcion", document.getElementById('descripcion').value);
     formData.append("Precio", document.getElementById('precio').value);
-    formData.append("UrlImagen", document.getElementById('imagenProducto').files[0]);
-
+    formData.append("Descripcion", document.getElementById('descripcion').value);
+    const fileInput = document.getElementById('imagenProducto');
+    formData.append("file", fileInput.files[0]);
+    
     try {
         const response = await fetch(`${CONFIG.API_BASE_URL}/Productos/guardar`, {
             method: 'POST',
