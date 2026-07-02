@@ -19,6 +19,23 @@ document.getElementById('form-producto').addEventListener('submit', async (e) =>
     }
 });
 
+window.onload = function() {
+    initAuth((data) => {
+        const nombre = data.nombre || data.name;
+        const foto = data.foto || data.picture;
+
+        const nombreElement = document.getElementById('user-name');
+        if (nombreElement) {
+            nombreElement.innerText = nombre.toUpperCase();
+        }
+
+        const imgElement = document.getElementById('user-img');
+        if (imgElement) {
+            imgElement.src = foto || "images/default-user.png";
+        }
+    });
+}
+
 function verificarAdmin() {
     const session = JSON.parse(localStorage.getItem('user_session'));
     if (!session || session.rol !== 'admin') {

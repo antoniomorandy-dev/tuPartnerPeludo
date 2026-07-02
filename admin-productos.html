@@ -100,17 +100,6 @@
             </div>
         </div>
     </div>
-    <script>
-        window.onload = function() {
-            initAuth((data) => {
-                const nombre = data.nombre || data.name;
-                const foto = data.foto || data.picture;
-                
-                document.getElementById('user-name').innerText = nombre.toUpperCase();
-                document.getElementById('user-img').src = foto || "images/default-user.png";
-            });
-        }
-    </script>
     <script src="PetShopApi/script/master.js" defer></script>
 </body>
 </html>
