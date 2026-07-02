@@ -140,7 +140,7 @@ async function renderizarTablaProductos() {
             console.warn("La API no devolvió una lista en 'productos'", data);
         }
     } catch (error) {
-        console.error("Error al cargar la tabla:", error);
+        console.error("Error al cargar la tabla mensaje:", error);
     }
 }
 
