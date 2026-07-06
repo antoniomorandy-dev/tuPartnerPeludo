@@ -42,7 +42,7 @@ namespace PetShopApi.DAL
                 return (new SalidaMod { Codigo = -1, Mensaje = ex.Message }, new List<ProductosMod>());
             }
         }
-        public (SalidaMod, ProductosMod) GuardarProducto(ProductosMod producto) 
+        public (SalidaMod, ProductosMod) GuardarProducto(ProductosMod producto)
         {
             try
             {
@@ -64,6 +64,120 @@ namespace PetShopApi.DAL
             catch (Exception ex)
             {
                 return (new SalidaMod { Codigo = -1, Mensaje = ex.Message }, producto);
+            }
+        }
+        public SalidaMod ActualizarProducto(int id, ProductosMod producto)
+        {
+            try
+            {
+                using (var db = _conexionFll.ObtenerConexion())
+                {
+                    db.Open();
+                    string query = @"UPDATE Productos 
+                             SET Nombre = @Nombre, 
+                                 Descripcion = @Descripcion, 
+                                 Precio = @Precio, 
+                                 UrlImagen = @UrlImagen,
+                                 Stock = @Stock
+                             WHERE Id = @Id";
+
+                    using (var cmd = new MySqlCommand(query, db))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        cmd.Parameters.AddWithValue("@Nombre", producto.Nombre);
+                        cmd.Parameters.AddWithValue("@Descripcion", producto.Descripcion);
+                        cmd.Parameters.AddWithValue("@Precio", producto.Precio);
+                        cmd.Parameters.AddWithValue("@Stock", producto.Stock);
+                        cmd.Parameters.AddWithValue("@UrlImagen", producto.UrlImagen);
+
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+
+                        if (filasAfectadas > 0)
+                        {
+                            return new SalidaMod { Codigo = 1, Mensaje = "Producto actualizado con éxito" };
+                        }
+                        else
+                        {
+                            return new SalidaMod { Codigo = 0, Mensaje = "No se encontró el producto para actualizar" };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new SalidaMod { Codigo = -1, Mensaje = ex.Message };
+            }
+        }
+        public SalidaMod EliminarProducto(int id)
+        {
+            try
+            {
+                using (var db = _conexionFll.ObtenerConexion())
+                {
+                    db.Open();
+                    string query = "DELETE FROM Productos WHERE Id = @Id";
+                    using (var cmd = new MySqlCommand(query, db))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        int filasAfectadas = cmd.ExecuteNonQuery();
+                        if (filasAfectadas > 0)
+                        {
+                            return new SalidaMod { Codigo = 1, Mensaje = "Producto eliminado con éxito" };
+                        }
+                        else
+                        {
+                            return new SalidaMod { Codigo = 0, Mensaje = "No se encontró el producto para eliminar" };
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                return new SalidaMod { Codigo = -1, Mensaje = ex.Message };
+            }
+        }
+        public (SalidaMod, ProductosMod) ObtenerProductoPorId(int id)
+        {
+            ProductosMod producto = new ProductosMod();
+            SalidaMod salida = new SalidaMod();
+            try
+            {
+                using (var db = _conexionFll.ObtenerConexion())
+                {
+                    db.Open();
+                    string query = "SELECT * FROM Productos WHERE Id = @Id";
+                    using (var cmd = new MySqlCommand(query, db))
+                    {
+                        cmd.Parameters.AddWithValue("@Id", id);
+                        using (var reader = cmd.ExecuteReader())
+                        {
+                            if (reader.Read())
+                            {
+                                producto = new ProductosMod
+                                {
+                                    Id = reader.GetInt32("Id"),
+                                    Nombre = reader.GetString("Nombre"),
+                                    Descripcion = reader.GetString("Descripcion"),
+                                    Precio = reader.GetDecimal("Precio"),
+                                    Stock = reader.GetInt32("Stock"),
+                                    UrlImagen = reader.GetString("UrlImagen")
+                                };
+                                salida = new SalidaMod { Codigo = 1, Mensaje = "Producto encontrado" };
+                                return (salida, producto);
+                            }
+                            else
+                            {
+                                salida = new SalidaMod { Codigo = 0, Mensaje = "Producto no encontrado" };
+                                return (salida, producto);
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                salida = new SalidaMod { Codigo = -1, Mensaje = ex.Message };
+                return (salida, producto);
             }
         }
     }

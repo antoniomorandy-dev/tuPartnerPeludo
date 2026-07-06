@@ -36,6 +36,49 @@ public class ProductosController : ControllerBase
         var (salida, productos) = _productosDAL.ObtenerProductos();
         return Ok(new { salida, productos });
     }
+    [HttpPut("actualizar/{id}")]
+    public async Task<IActionResult> Actualizar(int id, [FromForm] ProductosMod producto)
+    {
+        try
+        {
+            string urlImagenFinal = producto.UrlImagen ?? string.Empty;
+
+            if (Request.Form.Files.Count > 0 && Request.Form.Files[0].Length > 0)
+            {
+                var archivo = Request.Form.Files[0];
+                var uploadParams = new ImageUploadParams()
+                {
+                    File = new FileDescription(archivo.FileName, archivo.OpenReadStream()),
+                    Folder = "productos"
+                };
+
+                var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+                urlImagenFinal = uploadResult.SecureUrl.ToString();
+            }
+            else
+            {
+                var respuestaBusqueda = _productosDAL.ObtenerProductoPorId(id);
+                urlImagenFinal = respuestaBusqueda.Item2.UrlImagen ?? string.Empty;
+            }
+
+            var productoActualizado = new ProductosMod
+            {
+                Id = id,
+                Nombre = producto.Nombre,
+                Precio = producto.Precio,
+                Descripcion = producto.Descripcion,
+                Stock = producto.Stock,
+                UrlImagen = urlImagenFinal
+            };
+
+            _productosDAL.ActualizarProducto(id, productoActualizado);
+            return Ok(new { codigo = 1, mensaje = "Producto actualizado correctamente" });
+        }
+        catch (Exception ex)
+        {
+            return Ok(new { codigo = -1, mensaje = "Error: " + ex.Message });
+        }
+    }
     [HttpPost]
     public async Task<IActionResult> GuardarProducto([FromForm] ProductosMod producto)
     {
@@ -60,6 +103,7 @@ public class ProductosController : ControllerBase
                 Nombre = producto.Nombre,
                 Precio = producto.Precio,
                 Descripcion = producto.Descripcion,
+                Stock = producto.Stock,
                 UrlImagen = urlGuardada
             };
 
